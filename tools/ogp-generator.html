@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>オトタイプ OGP画像ジェネレーター</title>
+<style>
+  body{font-family:sans-serif;background:#14162B;color:#fff;padding:24px}
+  button{font-size:16px;padding:12px 20px;border-radius:8px;border:none;background:#8A7DFF;color:#14162B;font-weight:700;cursor:pointer}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px}
+  canvas{width:100%;height:auto;border-radius:6px}
+  p{color:#9FA3C0;font-size:13px}
+</style>
+</head>
+<body>
+<h1>OGP画像ジェネレーター（1200×630 ×16）</h1>
+<p>このページをブラウザで開き（例: リポジトリ直下で <code>python -m http.server</code> → <code>/tools/ogp-generator.html</code>）、下のボタンを押すと16枚のPNGが順にダウンロードされます。保存先はすべて <code>assets/ogp/{typeId}.png</code> に配置してください。</p>
+<button id="dl">16枚を一括ダウンロード</button>
+<div class="grid" id="grid"></div>
+<script type="module">
+const TYPES = await fetch("../data/types.json").then(r=>r.json());
+const W=1200,H=630;
+const grid=document.getElementById("grid");
+const canvases={};
+
+async function ready(){ try{ await document.fonts.load("900 80px 'M PLUS Rounded 1c'"); }catch(e){} }
+
+function draw(t){
+  const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const x=cv.getContext("2d");
+  const g=x.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,t.color); g.addColorStop(.55,"#1B1E38"); g.addColorStop(1,"#0E0F1A");
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.fillStyle="rgba(255,255,255,.13)";
+  for(let i=0;i<20;i++){ x.beginPath(); x.arc((i*173)%W,(i*97)%H,2.4,0,7); x.fill(); }
+  x.textAlign="center";
+  x.fillStyle="rgba(255,255,255,.85)";
+  x.font="800 30px 'M PLUS Rounded 1c',sans-serif";
+  x.fillText("私は…", W/2, 150);
+  x.fillStyle="#FFFFFF";
+  x.font="900 84px 'M PLUS Rounded 1c',sans-serif";
+  x.fillText(t.name, W/2, 260);
+  x.font="700 36px 'M PLUS Rounded 1c',sans-serif";
+  x.fillStyle="rgba(255,255,255,.92)";
+  x.fillText(t.catch, W/2, 330);
+  x.font="800 28px 'M PLUS Rounded 1c',sans-serif";
+  x.fillStyle="rgba(255,255,255,.8)";
+  x.fillText([...t.id].join(" "), W/2, 390);
+  x.font="800 34px 'M PLUS Rounded 1c',sans-serif";
+  x.fillStyle="#FFFFFF";
+  x.fillText("#オトタイプ 聴き方タイプ診断", W/2, 500);
+  x.font="700 24px 'M PLUS Rounded 1c',sans-serif";
+  x.fillStyle="rgba(255,255,255,.7)";
+  x.fillText("あなたの聴き方も、20問・1分で。", W/2, 550);
+  return cv;
+}
+
+const link=document.createElement("link");
+link.rel="stylesheet";
+link.href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap";
+document.head.appendChild(link);
+await new Promise(r=>setTimeout(r,600)); await ready();
+
+for(const t of Object.values(TYPES)){ const cv=draw(t); canvases[t.id]=cv; grid.appendChild(cv); }
+
+document.getElementById("dl").addEventListener("click", async ()=>{
+  for(const [id,cv] of Object.entries(canvases)){
+    await new Promise(res=>cv.toBlob(b=>{
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(b); a.download=id+".png"; a.click();
+      setTimeout(()=>{URL.revokeObjectURL(a.href);res();},250);
+    },"image/png"));
+  }
+  alert("16枚のダウンロードを開始しました。assets/ogp/ に配置してください。");
+});
+</script>
+</body>
+</html>

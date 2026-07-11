@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>オトタイプ｜あなたの「聴き方」タイプ診断</title>
+<meta name="description" content="音楽の知識ゼロでOK。20問に答えるだけで、あなたの音楽の「聴き方」を16タイプから診断。友達と相性チェックして、次のライブに誘おう。">
+<meta property="og:title" content="オトタイプ｜あなたの「聴き方」タイプ診断">
+<meta property="og:description" content="20問でわかる、あなたの音楽の聴き方16タイプ。友達とのライブ相性もチェックできる無料診断。">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+  <span class="logo">オトタイプ<span class="dot">♪</span></span>
+  <span>あなたの「聴き方」タイプ診断</span>
+</header>
+
+<!-- ===== LP ===== -->
+<section class="screen active" id="screen-lp">
+  <div class="hero">
+    <p class="eyebrow">MUSIC LISTENING TYPE</p>
+    <h1>音楽の趣味じゃなく、<br><span class="grad">聴き方</span>を診断する。</h1>
+    <p>知識ゼロでOK・20問・約1分。<br>あなたの「聴き方」を16タイプから判定。</p>
+  </div>
+  <div class="invite-banner" id="invite-banner" style="display:none"></div>
+  <div class="typegrid" id="typegrid"></div>
+  <div class="cta">
+    <button class="btn-big" id="start">診断スタート（無料・約1分）</button>
+    <p class="note">登録不要・回答はどこにも保存されません</p>
+  </div>
+  <footer>
+    <p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p>
+    <p>アーティスト名は紹介のためのテキスト表記のみで、公認・提携を意味しません。© 2026 オトタイプ</p>
+  </footer>
+</section>
+
+<!-- ===== Quiz ===== -->
+<section class="screen" id="screen-quiz">
+  <div class="qhead">
+    <button class="back" id="qback">← 戻る</button>
+    <div class="progress"><i id="progress-i"></i></div>
+    <span class="qcount" id="qcount"></span>
+  </div>
+  <h2 class="qtext" id="qtext"></h2>
+  <div class="opts" id="opts"></div>
+</section>
+
+<!-- ===== Result ===== -->
+<section class="screen" id="screen-result">
+  <div class="rcard">
+    <p class="rcode" id="rcode"></p>
+    <h2 class="rname" id="rname"></h2>
+    <p class="rcatch" id="rcatch"></p>
+    <p class="rsub" id="rsub"></p>
+    <div class="chips" id="rchips"></div>
+  </div>
+  <div class="rtext" id="rtext"></div>
+  <div class="artists">
+    <h3>あなたのタイプの代表アーティスト</h3>
+    <p id="rartists"></p>
+  </div>
+  <div class="axes" id="raxes"></div>
+  <div class="actions">
+    <button class="btn primary" id="savecard">シェアカードを保存</button>
+    <div class="nick"><input id="nick" maxlength="20" placeholder="ニックネーム（任意・リンクに載ります）"></div>
+    <button class="btn" id="makelink">友達と相性チェック（リンクを送る）</button>
+    <button class="btn" id="retry">もう一度診断する</button>
+  </div>
+  <footer>
+    <p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p>
+  </footer>
+</section>
+
+<!-- ===== Compat ===== -->
+<section class="screen" id="screen-compat">
+  <div class="vs" id="vs"></div>
+  <div class="rating">
+    <p class="lbl">ライブ相性</p>
+    <p class="big" id="crating"></p>
+  </div>
+  <div class="rtext" id="ctext"></div>
+  <div class="artists">
+    <h3>一緒に行くならこの系統</h3>
+    <p id="clive"></p>
+  </div>
+  <div class="artists">
+    <h3>そのまま送れる誘い文句</h3>
+    <p id="cinvite"></p>
+    <button class="copybtn" id="copyinvite">コピーする</button>
+  </div>
+  <div class="actions">
+    <button class="btn primary" id="cshowmine">自分の結果をくわしく見る</button>
+    <button class="btn" id="cretry">もう一度診断する</button>
+  </div>
+  <footer>
+    <p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p>
+  </footer>
+</section>
+
+</div>
+<div class="toast" id="toast"></div>
+<script src="config.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
