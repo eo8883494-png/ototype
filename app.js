@@ -1,9 +1,13 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
-// 判定ロジックは scoring.mjs（単一の真実源）、キャラは chars.mjs を import する。
+// 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "6";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=6";
-import { charSVG } from "./chars.mjs?v=6";
+const ASSET_V = "7";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=7";
+
+function charSrc(t) { return `assets/chars/${t.id}.webp?v=${ASSET_V}`; }
+function charImg(t, size) {
+  return `<img class="chimg" src="${charSrc(t)}" width="${size}" height="${size}" alt="${esc(t.name)}のキャラクター">`;
+}
 
 // ---------- state ----------
 let TYPES = null, QUESTIONS = null, COMPAT = null;
@@ -42,7 +46,7 @@ async function boot() {
 // LPのキャラ行進（マーキー用に2周分並べて -50% ループ）
 function renderCharRow() {
   const slots = Object.values(TYPES).map((t) =>
-    `<span class="cslot">${charSVG(t, 64)}<span class="cname">${esc(t.name)}</span></span>`
+    `<span class="cslot">${charImg(t, 64)}<span class="cname">${esc(t.name)}</span></span>`
   ).join("");
   $("#chartrack").innerHTML = slots + slots;
 }
@@ -140,7 +144,7 @@ function applyTypeColor(color) { document.documentElement.style.setProperty("--t
 function showResult() {
   const t = typeOf(myResult.code);
   applyTypeColor(t.color);
-  $("#rchar").innerHTML = charSVG(t, 116);
+  $("#rchar").innerHTML = charImg(t, 132);
   $("#rcode").textContent = [...myResult.code].join(" ");
   $("#rname").textContent = t.name;
   $("#rcatch").textContent = t.catch;
@@ -199,7 +203,7 @@ function renderTypesGrid() {
   typesRendered = true;
   $("#typegrid").innerHTML = Object.values(TYPES).map((t) => `
     <a class="ttile" href="#/t/${t.id}" style="background:color-mix(in srgb, ${esc(t.color)} 10%, #fff);border-color:color-mix(in srgb, ${esc(t.color)} 35%, #fff)">
-      ${charSVG(t, 86)}
+      ${charImg(t, 108)}
       <span class="tc" style="background:${esc(t.color)}">${t.id}</span>
       <span class="tn">${esc(t.name)}</span>
     </a>`).join("");
@@ -216,7 +220,7 @@ function renderTypeDetail(code) {
   applyTypeColor(t.color);
   $("#tdbody").innerHTML = `
     <div class="rcard">
-      <div class="rchar">${charSVG(t, 130)}</div>
+      <div class="rchar">${charImg(t, 150)}</div>
       <p class="rcode">${[...t.id].join(" ")}</p>
       <h2 class="rname">${esc(t.name)}</h2>
       <p class="rcatch">${esc(t.catch)}</p>
@@ -236,19 +240,18 @@ function renderTypeDetail(code) {
       <h3>ライブ相性◎のタイプ</h3>
       <div class="buddies">${compatPartners(code).map((c) => {
         const b = TYPES[c];
-        return `<a class="buddy" href="#/t/${c}">${charSVG(b, 56)}<span>${esc(b.name)}</span></a>`;
+        return `<a class="buddy" href="#/t/${c}">${charImg(b, 64)}<span>${esc(b.name)}</span></a>`;
       }).join("")}</div>
     </div>`;
 }
 
 // ---------- share card (Canvas) ----------
-function loadCharImage(t) { // キャラSVG→Image（Canvasへ合成するため）
+function loadCharImage(t) { // キャライラスト→Image（Canvasへ合成するため）
   return new Promise((resolve) => {
-    const url = URL.createObjectURL(new Blob([charSVG(t, 480)], { type: "image/svg+xml" }));
     const img = new Image();
-    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); }; // 失敗してもカードは作る
-    img.src = url;
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null); // 失敗してもカードは作る
+    img.src = charSrc(t);
   });
 }
 

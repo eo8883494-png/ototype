@@ -75,7 +75,8 @@ b{font-weight:900}
 .charrow{overflow:hidden;margin-top:6px}
 .chartrack{display:flex;gap:10px;width:max-content;animation:marquee 42s linear infinite}
 .chartrack .cslot{flex:none;text-align:center;width:78px}
-.chartrack .cname{display:block;font-size:9.5px;font-weight:800;color:#8A7A5C;margin-top:-4px;white-space:nowrap}
+.chartrack .cname{display:block;font-size:9.5px;font-weight:800;color:#8A7A5C;margin-top:0;white-space:nowrap}
+.chimg{display:inline-block;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(93,120,110,.18))}
 @keyframes marquee{to{transform:translateX(-50%)}}
 .eq{display:flex;align-items:flex-end;justify-content:center;gap:5px;height:54px;margin-top:8px;padding-bottom:0}
 .eq i{width:12px;border-radius:6px 6px 0 0;animation:eqb 1.1s ease-in-out infinite alternate}
