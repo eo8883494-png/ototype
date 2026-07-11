@@ -1,8 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "7";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=7";
+const ASSET_V = "8";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=8";
+import { pickWeekly } from "./playlist.mjs?v=8";
 
 function charSrc(t) { return `assets/chars/${t.id}.webp?v=${ASSET_V}`; }
 function charImg(t, size) {
@@ -10,7 +11,7 @@ function charImg(t, size) {
 }
 
 // ---------- state ----------
-let TYPES = null, QUESTIONS = null, COMPAT = null;
+let TYPES = null, QUESTIONS = null, COMPAT = null, PLAYLISTS = null;
 let answers = [];            // 自分の回答（0..6、未回答は -1）
 let inviter = null;          // { answers:[], nick:"" } 招待リンク経由のとき
 let myResult = null;         // judge() の結果
@@ -23,12 +24,13 @@ const LINK_V = "2"; // 招待リンクの版（v2=7段階回答）
 
 // ---------- boot ----------
 async function boot() {
-  const [t, q, c] = await Promise.all([
+  const [t, q, c, pls] = await Promise.all([
     fetch(`data/types.json?v=${ASSET_V}`).then((r) => r.json()),
     fetch(`data/questions.json?v=${ASSET_V}`).then((r) => r.json()),
     fetch(`data/compat.json?v=${ASSET_V}`).then((r) => r.json()),
+    fetch(`data/playlists.json?v=${ASSET_V}`).then((r) => r.json()),
   ]);
-  TYPES = t; QUESTIONS = q; COMPAT = c;
+  TYPES = t; QUESTIONS = q; COMPAT = c; PLAYLISTS = pls;
 
   // 招待リンク ?a=回答列(0-6)&v=2&n=ニックネーム
   const p = new URLSearchParams(location.search);
@@ -177,13 +179,21 @@ function renderAxes() {
   }).join("");
 }
 
+function playlistHTML(t) {
+  const pool = PLAYLISTS[t.id] || [];
+  const { songs } = pickWeekly(pool);
+  const rows = songs.map((s, i) =>
+    `<a class="song" href="https://open.spotify.com/search/${encodeURIComponent(s.t + " " + s.a)}" target="_blank" rel="noopener">
+      <span class="no">${i + 1}</span><span class="meta"><span class="st">${esc(s.t)}</span><span class="sa">${esc(s.a)}</span></span><span class="go">🔍</span>
+    </a>`).join("");
+  return `<p class="pl-title">「${esc(t.playlist.title)}」</p>
+    <p class="pl-week">今週の10曲 — 毎週自動で入れ替わります。タップで曲を検索できます。</p>
+    <div class="songs">${rows}</div>
+    <p class="pl-hint">選曲はエンタメ目的の例示です。楽曲は各サービスの公式配信でお楽しみください。</p>`;
+}
+
 function renderPlaylist(t) {
-  const pl = t.playlist || { title: "あなたの定番リスト", recipe: [] };
-  $("#pltitle").textContent = `「${pl.title}」`;
-  $("#plrecipe").innerHTML = pl.recipe.map((r) => `<li>${esc(r)}</li>`).join("");
-  $("#pllinks").innerHTML = t.artists.slice(0, 3).map((a) =>
-    `<a href="https://open.spotify.com/search/${encodeURIComponent(a)}" target="_blank" rel="noopener">🔍 ${esc(a)}</a>`
-  ).join("") + `<a href="https://music.youtube.com/search?q=${encodeURIComponent(t.artists[0] || "")}" target="_blank" rel="noopener">▶ YouTube Musicで探す</a>`;
+  $("#plbody").innerHTML = playlistHTML(t);
 }
 
 $("#retry").addEventListener("click", () => { inviter = null; myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
@@ -232,9 +242,10 @@ function renderTypeDetail(code) {
     <div class="panel"><h3>この聴き方の強み</h3><p class="tdtext">${esc(d.strength)}</p></div>
     <div class="panel"><h3>代表アーティスト</h3><p class="strong">${t.artists.map(esc).join(" / ")}</p></div>
     <div class="panel playlist">
-      <h3>🎵 プレイリストレシピ</h3>
-      <p class="pl-title">「${esc(t.playlist.title)}」</p>
-      <ol>${t.playlist.recipe.map((r) => `<li>${esc(r)}</li>`).join("")}</ol>
+      <h3>🎵 今週のプレイリスト</h3>
+      ${playlistHTML(t)}
+      <h4 class="pl-sub">組み方のコツ</h4>
+      <ol class="pl-recipe">${t.playlist.recipe.map((r) => `<li>${esc(r)}</li>`).join("")}</ol>
     </div>
     <div class="panel">
       <h3>ライブ相性◎のタイプ</h3>

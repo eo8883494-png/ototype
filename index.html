@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 <!-- Google Analytics (GA4) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-V0BNHBZ9CW"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-V0BNHBZ9CW');</script>
@@ -121,11 +121,8 @@
       <p id="rartists" class="strong"></p>
     </div>
     <div class="panel playlist">
-      <h3>🎵 あなた用プレイリストレシピ</h3>
-      <p class="pl-title" id="pltitle"></p>
-      <ol id="plrecipe"></ol>
-      <p class="pl-hint">レシピの素材はここから探せる：</p>
-      <div class="pl-links" id="pllinks"></div>
+      <h3>🎵 あなた用・今週のプレイリスト</h3>
+      <div id="plbody"></div>
     </div>
     <div class="actions">
       <button class="btn primary" id="savecard">シェアカードを保存</button>
@@ -166,6 +163,6 @@
 </section>
 
 <div class="toast" id="toast"></div>
-<script type="module" src="app.js?v=7"></script>
+<script type="module" src="app.js?v=8"></script>
 </body>
 </html>

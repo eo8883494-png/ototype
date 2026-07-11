@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { existsSync } from "node:fs";
 import { judge, AXES, SCALE } from "../scoring.mjs";
+import { pickWeekly, SHOW_N } from "../playlist.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const QUESTIONS = JSON.parse(readFileSync(join(ROOT, "data/questions.json"), "utf-8"));
@@ -31,6 +32,26 @@ for (const ax of AXES) {
 { // キャライラスト: 全16タイプ分の assets/chars/{code}.webp が存在する
   const missing = CODES.filter((c) => !existsSync(join(ROOT, "assets/chars", c + ".webp")));
   if (missing.length === 0) ok("キャライラスト: 16体すべて存在(assets/chars/*.webp)"); else fail("キャライラスト欠落: " + missing.join(","));
+}
+{ // 週替わりプレイリスト: 構造(16タイプ×12曲以上・曲名/アーティスト必須・プール内重複なし)
+  const PL = JSON.parse(readFileSync(join(ROOT, "data/playlists.json"), "utf-8"));
+  for (const c of CODES) {
+    const pool = PL[c];
+    if (!pool || pool.length < 12) { fail(`playlists: ${c} が12曲未満`); continue; }
+    if (!pool.every((s) => s.t && s.a)) fail(`playlists: ${c} にt/a欠落`);
+    if (new Set(pool.map((s) => s.t + "/" + s.a)).size !== pool.length) fail(`playlists: ${c} にプール内重複`);
+  }
+  ok("playlists: 16タイプ×12曲以上・重複なし");
+  // 選曲: 10曲・重複なし・決定的・週が変われば選曲/並びが変わる
+  const pool = PL["FLDT"];
+  const WEEK = 7 * 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  const a1 = pickWeekly(pool, now), a2 = pickWeekly(pool, now + 1000);
+  const b = pickWeekly(pool, now + WEEK), c2 = pickWeekly(pool, now + 2 * WEEK);
+  const key = (r) => r.songs.map((s) => s.t).join("|");
+  if (a1.songs.length === SHOW_N && new Set(a1.songs.map((s) => s.t)).size === SHOW_N) ok(`pickWeekly: ${SHOW_N}曲・重複なし`); else fail("pickWeekly: 曲数/重複NG");
+  if (key(a1) === key(a2)) ok("pickWeekly: 同一週は同一選曲(決定的)"); else fail("pickWeekly: 同一週で選曲が揺れる");
+  if (key(a1) !== key(b) && key(b) !== key(c2)) ok("pickWeekly: 週が変わると選曲/並びが変わる"); else fail("pickWeekly: 週替わりで変化しない");
 }
 
 // 1) バランス：ランダム回答 4万回で全16タイプが 2% 以上出現
