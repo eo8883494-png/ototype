@@ -1,10 +1,10 @@
-// app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし。
+// app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）を import する。
-import { judge, AXES, CLOSE_MARGIN } from "./scoring.mjs";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs";
 
 // ---------- state ----------
 let TYPES = null, QUESTIONS = null, COMPAT = null;
-let answers = [];            // 自分の回答（選択肢index）
+let answers = [];            // 自分の回答（0..6、未回答は -1）
 let inviter = null;          // { answers:[], nick:"" } 招待リンク経由のとき
 let myResult = null;         // judge() の結果
 let compatShown = null;      // 直近の相性計算結果（コピー用）
@@ -12,6 +12,7 @@ let compatShown = null;      // 直近の相性計算結果（コピー用）
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const NICK_MAX = 20;
+const LINK_V = "2"; // 招待リンクの版（v2=7段階回答）
 
 // ---------- boot ----------
 async function boot() {
@@ -22,60 +23,93 @@ async function boot() {
   ]);
   TYPES = t; QUESTIONS = q; COMPAT = c;
 
-  // 招待リンク?a=回答列&v=1&n=ニックネーム
+  // 招待リンク ?a=回答列(0-6)&v=2&n=ニックネーム
   const p = new URLSearchParams(location.search);
   const a = p.get("a");
-  if (p.get("v") === "1" && a && new RegExp(`^[0-3]{${QUESTIONS.length}}$`).test(a)) {
+  if (p.get("v") === LINK_V && a && new RegExp(`^[0-6]{${QUESTIONS.length}}$`).test(a)) {
     inviter = { answers: [...a].map(Number), nick: (p.get("n") || "").slice(0, NICK_MAX) };
     const banner = $("#invite-banner");
     banner.innerHTML = `🎧 <b>${esc(inviter.nick || "友達")}</b>さんから相性チェックの招待が届いています。診断すると2人のライブ相性がわかる！`;
     banner.style.display = "block";
   }
-  renderTypeGrid();
   route();
-}
-
-function renderTypeGrid() {
-  $("#typegrid").innerHTML = Object.values(TYPES).map((t) => `<span style="color:${esc(t.color)}">${esc(t.name)}</span>`).join("");
 }
 
 // ---------- router ----------
 window.addEventListener("hashchange", route);
 function route() {
   const h = location.hash || "#/";
-  const id = h.startsWith("#/q") ? "quiz" : h.startsWith("#/r") ? "result" : h.startsWith("#/c") ? "compat" : "lp";
+  const id = h.startsWith("#/q") ? "quiz" : h.startsWith("#/r") ? "result" : h.startsWith("#/c") ? "compat" : h.startsWith("#/t") ? "types" : "lp";
   // 状態を持たない画面への直リンクはLPへ（相性リンクはクエリで再現されるので安全）
   if ((id === "result" || id === "compat") && !myResult) { location.hash = "#/"; return; }
   document.querySelectorAll(".screen").forEach((el) => el.classList.remove("active"));
   $("#screen-" + id).classList.add("active");
-  if (id === "quiz") renderQuestion();
+  if (id === "quiz" && !$("#qlist").childElementCount) renderQuiz();
+  if (id === "types") renderTypesList();
   window.scrollTo(0, 0);
 }
 
-// ---------- quiz ----------
-$("#start").addEventListener("click", () => { answers = []; location.hash = "#/q"; });
-$("#qback").addEventListener("click", () => {
-  if (answers.length === 0) { location.hash = "#/"; return; }
-  answers.pop(); renderQuestion();
-});
+// ---------- quiz（7段階同意スケール・1ページスクロール式） ----------
+$("#start").addEventListener("click", startQuiz);
+$("#qback").addEventListener("click", () => { location.hash = "#/"; });
 
-function renderQuestion() {
-  const i = answers.length;
-  if (i >= QUESTIONS.length) return finishQuiz();
-  const q = QUESTIONS[i];
-  $("#qcount").textContent = `${i + 1} / ${QUESTIONS.length}`;
-  $("#progress-i").style.width = `${(i / QUESTIONS.length) * 100}%`;
-  $("#qtext").textContent = q.text;
-  $("#opts").innerHTML = q.options.map((o, oi) => `<button class="opt" data-i="${oi}">${esc(o.text)}</button>`).join("");
-  document.querySelectorAll("#opts .opt").forEach((b) =>
-    b.addEventListener("click", () => { answers.push(Number(b.dataset.i)); renderQuestion(); })
-  );
+function startQuiz() {
+  answers = Array(QUESTIONS.length).fill(-1);
+  $("#qlist").innerHTML = "";
+  $("#finishbar").classList.remove("show");
+  location.hash = "#/q";
+  renderQuiz();
 }
 
-function finishQuiz() {
+function renderQuiz() {
+  if (answers.length !== QUESTIONS.length) answers = Array(QUESTIONS.length).fill(-1);
+  $("#qlist").innerHTML = QUESTIONS.map((q, qi) => `
+    <div class="qitem${qi === 0 ? " current" : ""}" id="qi${qi}">
+      <p class="qtext">${esc(q.text)}</p>
+      <div class="scale">
+        ${Array.from({ length: SCALE }, (_, s) =>
+          `<button class="dotbtn s${s} ${s < 3 ? "agree" : s > 3 ? "disagree" : ""}" data-q="${qi}" data-s="${s}" aria-label="Q${qi + 1} 選択肢${s + 1}"></button>`
+        ).join("")}
+      </div>
+      <div class="scale-labels"><span class="agree">そう思う</span><span class="disagree">そう思わない</span></div>
+    </div>`).join("");
+  updateProgress();
+  document.querySelectorAll(".dotbtn").forEach((b) => b.addEventListener("click", onPick));
+}
+
+function onPick(e) {
+  const qi = Number(e.currentTarget.dataset.q);
+  const s = Number(e.currentTarget.dataset.s);
+  answers[qi] = s;
+  const item = $("#qi" + qi);
+  item.querySelectorAll(".dotbtn").forEach((b) => b.classList.toggle("picked", Number(b.dataset.s) === s));
+  item.classList.add("answered");
+  item.classList.remove("current");
+  updateProgress();
+  // 次の未回答へスムーズスクロール
+  const next = answers.findIndex((a) => a === -1);
+  if (next >= 0) {
+    const el = $("#qi" + next);
+    el.classList.add("current");
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    $("#finishbar").classList.add("show");
+    $("#finishbar").scrollIntoView({ behavior: "smooth", block: "end" });
+  }
+}
+
+function updateProgress() {
+  const done = answers.filter((a) => a >= 0).length;
+  $("#qcount").textContent = `${done} / ${QUESTIONS.length}`;
+  $("#progress-i").style.width = `${(done / QUESTIONS.length) * 100}%`;
+}
+
+$("#finishquiz").addEventListener("click", () => {
+  if (answers.some((a) => a < 0)) return;
   myResult = judge(answers, QUESTIONS);
+  $("#finishbar").classList.remove("show");
   if (inviter) { showCompat(); } else { showResult(); }
-}
+});
 
 // ---------- result ----------
 function typeOf(code) { return TYPES[code]; }
@@ -88,7 +122,7 @@ function nearCode(r) { // 最も僅差の軸を反転した「寄り」タイプ
 
 function applyTypeColor(color) { document.documentElement.style.setProperty("--type", color); }
 
-async function showResult() {
+function showResult() {
   const t = typeOf(myResult.code);
   applyTypeColor(t.color);
   $("#rcode").textContent = [...myResult.code].join(" ");
@@ -98,27 +132,61 @@ async function showResult() {
   $("#rsub").textContent = myResult.pure ? "純度高め。芯の通った聴き方タイプ" : `${near.name}寄り`;
   $("#rchips").innerHTML = t.keywords.map((k) => `<span class="chip">#${esc(k)}</span>`).join("");
   $("#rartists").innerHTML = t.artists.map(esc).join("<br>");
+  $("#rtext").textContent = t.fallback;
   renderAxes();
+  renderPlaylist(t);
   location.hash = "#/r";
-  // AI解説（失敗・未設定時は fallback 文）
-  const box = $("#rtext");
-  box.classList.add("loading"); box.textContent = "あなた専用の解説を書いています…";
-  const picked = answers.map((ai, qi) => QUESTIONS[qi].options[ai].text);
-  const ai = await callWorker("result", { name: t.name, catch: t.catch, keywords: t.keywords, answers: picked, artists: t.artists });
-  box.classList.remove("loading");
-  box.textContent = (ai && typeof ai.text === "string" && ai.text.trim()) ? ai.text.trim() : t.fallback;
 }
 
 function renderAxes() {
   $("#raxes").innerHTML = AXES.map((ax) => {
-    const total = QUESTIONS.filter((q) => q.axis === ax.id).reduce((s, q) => s + Math.max(...q.options.map((o) => Object.values(o.weights)[0])), 0);
-    const p = myResult.score[ax.pos] || 0, n = myResult.score[ax.neg] || 0;
-    const ratio = (n / (p + n || 1)) * 100; // 左=pos極, 右=neg極
+    const total = myResult.totals[ax.id]; // +AXIS_MAX(pos極寄り) 〜 -AXIS_MAX(neg極寄り)
+    const ratio = ((AXIS_MAX - total) / (AXIS_MAX * 2)) * 100; // 左=pos極, 右=neg極
     return `<div class="axisrow"><span>${ax.posLabel}</span><div class="bar"><i style="left:${ratio}%"></i></div><span style="text-align:right">${ax.negLabel}</span></div>`;
   }).join("");
 }
 
-$("#retry").addEventListener("click", () => { answers = []; inviter = null; myResult = null; history.replaceState(null, "", location.pathname); location.hash = "#/q"; });
+function renderPlaylist(t) {
+  const pl = t.playlist || { title: "あなたの定番リスト", recipe: [] };
+  $("#pltitle").textContent = `「${pl.title}」`;
+  $("#plrecipe").innerHTML = pl.recipe.map((r) => `<li>${esc(r)}</li>`).join("");
+  $("#pllinks").innerHTML = t.artists.slice(0, 3).map((a) =>
+    `<a href="https://open.spotify.com/search/${encodeURIComponent(a)}" target="_blank" rel="noopener">🔍 ${esc(a)}</a>`
+  ).join("") + `<a href="https://music.youtube.com/search?q=${encodeURIComponent(t.artists[0] || "")}" target="_blank" rel="noopener">▶ YouTube Musicで探す</a>`;
+}
+
+$("#retry").addEventListener("click", () => { inviter = null; myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
+$("#rtypes").addEventListener("click", () => { location.hash = "#/t"; });
+
+// ---------- types list ----------
+$("#gotypes").addEventListener("click", () => { location.hash = "#/t"; });
+$("#tstart").addEventListener("click", startQuiz);
+$("#tback").addEventListener("click", () => { location.hash = "#/"; });
+
+let typesRendered = false;
+function renderTypesList() {
+  if (typesRendered) return;
+  typesRendered = true;
+  $("#typelist").innerHTML = Object.values(TYPES).map((t) => `
+    <div class="tcard" id="tc-${t.id}">
+      <button class="tcard-head" data-t="${t.id}">
+        <span class="tc" style="background:${esc(t.color)}">${t.id}</span>
+        <span class="tn">${esc(t.name)}</span>
+        <span class="tarrow">›</span>
+      </button>
+      <div class="tcard-body">
+        <p class="tcatch" style="color:${esc(t.color)}">${esc(t.catch)}</p>
+        <p class="tdesc">${esc(t.fallback)}</p>
+        <h4>代表アーティスト</h4>
+        <p class="tart">${t.artists.map(esc).join(" / ")}</p>
+        <h4>プレイリストレシピ「${esc(t.playlist.title)}」</h4>
+        <p class="tpl">${t.playlist.recipe.map(esc).join("<br>")}</p>
+      </div>
+    </div>`).join("");
+  document.querySelectorAll(".tcard-head").forEach((b) =>
+    b.addEventListener("click", () => $("#tc-" + b.dataset.t).classList.toggle("open"))
+  );
+}
 
 // ---------- share card (Canvas) ----------
 function drawCard(w, h) {
@@ -170,7 +238,7 @@ $("#savecard").addEventListener("click", async () => {
 // ---------- compat link ----------
 $("#makelink").addEventListener("click", async () => {
   const nick = $("#nick").value.trim().slice(0, NICK_MAX);
-  const url = `${siteBase()}index.html?a=${answers.join("")}&v=1${nick ? "&n=" + encodeURIComponent(nick) : ""}`;
+  const url = `${siteBase()}index.html?a=${answers.join("")}&v=${LINK_V}${nick ? "&n=" + encodeURIComponent(nick) : ""}`;
   const text = `私は「${typeOf(myResult.code).name}」だった🎧 相性チェックしてみて→ ${url}`;
   if (navigator.share) { try { await navigator.share({ text }); return; } catch (e) { /* fallthrough */ } }
   await copy(text); toast("相性リンクをコピーしました");
@@ -190,7 +258,7 @@ function liveSuggest(a, b) {
   return sameCoreL ? "座席ありのホール公演" : "初心者も入りやすいフェスの昼帯";
 }
 
-async function showCompat() {
+function showCompat() {
   const me = myResult;
   const other = judge(inviter.answers, QUESTIONS);
   const tMe = typeOf(me.code), tOther = typeOf(other.code);
@@ -199,56 +267,28 @@ async function showCompat() {
   const live = liveSuggest(me.code, other.code);
 
   $("#vs").innerHTML = `
-    <div class="vcard" style="background:color-mix(in srgb, ${esc(tOther.color)} 22%, var(--card))">
+    <div class="vcard" style="border-color:${esc(tOther.color)}">
       <div class="who">${esc(inviter.nick || "友達")}</div>
       <div class="c" style="color:${esc(tOther.color)}">${[...other.code].join(" ")}</div>
       <div class="n">${esc(tOther.name)}</div>
     </div>
     <div class="vsmark">×</div>
-    <div class="vcard" style="background:color-mix(in srgb, ${esc(tMe.color)} 22%, var(--card))">
+    <div class="vcard" style="border-color:${esc(tMe.color)}">
       <div class="who">あなた</div>
       <div class="c" style="color:${esc(tMe.color)}">${[...me.code].join(" ")}</div>
       <div class="n">${esc(tMe.name)}</div>
     </div>`;
   $("#crating").textContent = base.rating;
   $("#clive").textContent = live;
-  location.hash = "#/c";
-
-  const box = $("#ctext");
-  box.classList.add("loading"); box.textContent = "2人の化学反応を分析中…";
-  const pickedMe = answers.map((ai2, qi) => QUESTIONS[qi].options[ai2].text).slice(0, 5);
-  const pickedOther = inviter.answers.map((ai2, qi) => QUESTIONS[qi].options[ai2].text).slice(0, 5);
-  const ai = await callWorker("compat", { typeA: tOther.name, answersA: pickedOther, typeB: tMe.name, answersB: pickedMe, rating: base.rating });
-  box.classList.remove("loading");
-  const fallbackInvite = `ライブ相性${base.rating}だったよ！${live}、いっしょに行かない？🎧`;
-  if (ai && typeof ai.text === "string" && ai.text.trim()) {
-    box.textContent = ai.text.trim();
-    if (typeof ai.live === "string" && ai.live.trim()) $("#clive").textContent = ai.live.trim();
-    compatShown = { invite: (typeof ai.invite === "string" && ai.invite.trim()) ? ai.invite.trim() : fallbackInvite };
-  } else {
-    box.textContent = `${base.summary}。${live}なら、2人とも間違いなく楽しめるはず。`;
-    compatShown = { invite: fallbackInvite };
-  }
+  $("#ctext").textContent = `${base.summary}。${live}なら、2人とも間違いなく楽しめるはず。`;
+  compatShown = { invite: `ライブ相性${base.rating}だったよ！${live}、いっしょに行かない？🎧` };
   $("#cinvite").textContent = compatShown.invite;
+  location.hash = "#/c";
 }
 
 $("#copyinvite").addEventListener("click", async () => { await copy(compatShown.invite); toast("誘い文句をコピーしました"); });
-$("#cretry").addEventListener("click", () => { answers = []; inviter = null; myResult = null; history.replaceState(null, "", location.pathname); location.hash = "#/q"; });
+$("#cretry").addEventListener("click", () => { inviter = null; myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
 $("#cshowmine").addEventListener("click", () => { inviter = null; showResult(); });
-
-// ---------- AI worker ----------
-async function callWorker(kind, payload) {
-  if (!CONFIG.WORKER_URL) return null;
-  try {
-    const res = await fetch(CONFIG.WORKER_URL.replace(/\/$/, "") + "/generate", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ kind, payload }),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return (data && typeof data === "object") ? data : null;
-  } catch (e) { return null; }
-}
 
 // ---------- utils ----------
 async function copy(text) {

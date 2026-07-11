@@ -18,99 +18,176 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-V0BNHBZ9CW');</script>
 </head>
 <body>
-<div class="wrap">
-
-<header class="site">
-  <span class="logo">オトタイプ<span class="dot">♪</span></span>
-  <span>あなたの「聴き方」タイプ診断</span>
-</header>
 
 <!-- ===== LP ===== -->
 <section class="screen active" id="screen-lp">
-  <div class="hero">
-    <p class="eyebrow">MUSIC LISTENING TYPE</p>
-    <h1>音楽の趣味じゃなく、<br><span class="grad">聴き方</span>を診断する。</h1>
-    <p>知識ゼロでOK・20問・約1分。<br>あなたの「聴き方」を16タイプから判定。</p>
+  <div class="sky">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="wrap">
+      <header class="site"><span class="logo">オトタイプ<span class="dot">♪</span></span></header>
+      <div class="hero">
+        <p class="eyebrow">MUSIC LISTENING TYPE</p>
+        <h1>音楽の聴き方を、<br>16タイプに。</h1>
+        <p class="sub">趣味じゃなく<b>「聴き方」</b>を診断する、<br>あたらしい音楽タイプ診断。</p>
+        <p class="badge">※4つの軸 × 16タイプ・知識ゼロでOK</p>
+      </div>
+      <div class="invite-banner" id="invite-banner" style="display:none"></div>
+      <div class="cta2">
+        <button class="btn-lp pink" id="start">
+          <span class="l1">診断を始める<span class="arrow">→</span><span class="qn">全20問</span></span>
+          <span class="l2">約2分・登録不要・<b>無料</b></span>
+        </button>
+        <button class="btn-lp blue" id="gotypes">
+          <span class="l1">16タイプ一覧を見る</span>
+          <span class="l2">自分のタイプが<b>もうわかる</b>方はこちら</span>
+        </button>
+      </div>
+      <div class="cloud-note">
+        <p>本診断はエンタメ目的です。<br>アーティスト各位とは無関係です。</p>
+      </div>
+    </div>
+    <svg class="scene" viewBox="0 0 780 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMax slice">
+      <ellipse cx="390" cy="330" rx="560" ry="150" fill="#A8CDA0"/>
+      <ellipse cx="80" cy="345" rx="300" ry="140" fill="#98C290"/>
+      <ellipse cx="700" cy="350" rx="300" ry="140" fill="#98C290"/>
+      <!-- tents -->
+      <path d="M120 175 L165 105 L210 175 Z" fill="#EFC163"/>
+      <path d="M165 105 L165 175" stroke="#D9A63F" stroke-width="4"/>
+      <path d="M560 180 L610 100 L660 180 Z" fill="#E58F7E"/>
+      <path d="M610 100 L610 180" stroke="#C96F5E" stroke-width="4"/>
+      <!-- stage speakers -->
+      <rect x="330" y="120" width="34" height="58" rx="7" fill="#5F7470"/>
+      <circle cx="347" cy="138" r="8" fill="#DCE8E2"/>
+      <circle cx="347" cy="162" r="11" fill="#DCE8E2"/>
+      <!-- note character 1 -->
+      <g transform="translate(255 150)">
+        <circle cx="0" cy="18" r="20" fill="#F5A7B8"/>
+        <rect x="16" y="-32" width="6" height="52" rx="3" fill="#F5A7B8"/>
+        <path d="M16 -30 q22 4 20 20 q-2 -8 -20 -8 Z" fill="#F5A7B8"/>
+        <circle cx="-7" cy="15" r="2.6" fill="#4A3B3B"/><circle cx="7" cy="15" r="2.6" fill="#4A3B3B"/>
+        <path d="M-5 24 q5 5 10 0" stroke="#4A3B3B" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <circle cx="-12" cy="21" r="3.4" fill="#F088A0" opacity=".7"/><circle cx="12" cy="21" r="3.4" fill="#F088A0" opacity=".7"/>
+      </g>
+      <!-- headphone character 2 -->
+      <g transform="translate(430 158)">
+        <circle cx="0" cy="12" r="24" fill="#9DB8E0"/>
+        <path d="M-24 8 a24 24 0 0 1 48 0" stroke="#5F7470" stroke-width="6" fill="none"/>
+        <rect x="-30" y="4" width="10" height="18" rx="5" fill="#5F7470"/>
+        <rect x="20" y="4" width="10" height="18" rx="5" fill="#5F7470"/>
+        <circle cx="-8" cy="12" r="2.6" fill="#3B434A"/><circle cx="8" cy="12" r="2.6" fill="#3B434A"/>
+        <path d="M-6 21 q6 6 12 0" stroke="#3B434A" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      </g>
+      <!-- small note character 3 -->
+      <g transform="translate(505 185)">
+        <circle cx="0" cy="10" r="14" fill="#F0C863"/>
+        <rect x="11" y="-22" width="5" height="34" rx="2.5" fill="#F0C863"/>
+        <circle cx="-5" cy="8" r="2" fill="#4A433B"/><circle cx="5" cy="8" r="2" fill="#4A433B"/>
+        <path d="M-4 14 q4 4 8 0" stroke="#4A433B" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </g>
+      <!-- floating notes -->
+      <text x="205" y="95" font-size="26" fill="#8AA8A0">♪</text>
+      <text x="475" y="80" font-size="20" fill="#8AA8A0">♫</text>
+      <text x="690" y="120" font-size="24" fill="#8AA8A0">♪</text>
+    </svg>
   </div>
-  <div class="invite-banner" id="invite-banner" style="display:none"></div>
-  <div class="typegrid" id="typegrid"></div>
-  <div class="cta">
-    <button class="btn-big" id="start">診断スタート（無料・約1分）</button>
-    <p class="note">登録不要・回答はどこにも保存されません</p>
-  </div>
-  <footer>
-    <p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p>
+  <footer class="wrap">
     <p>アーティスト名は紹介のためのテキスト表記のみで、公認・提携を意味しません。© 2026 オトタイプ</p>
-    <p>制作: <a href="https://eo8883494-png.github.io/ai-tools/" style="color:inherit">はたらくAI研究室</a></p>
+    <p>制作: <a href="https://eo8883494-png.github.io/ai-tools/">はたらくAI研究室</a></p>
   </footer>
 </section>
 
 <!-- ===== Quiz ===== -->
 <section class="screen" id="screen-quiz">
   <div class="qhead">
-    <button class="back" id="qback">← 戻る</button>
-    <div class="progress"><i id="progress-i"></i></div>
-    <span class="qcount" id="qcount"></span>
+    <div class="wrap qhead-in">
+      <button class="back" id="qback">←</button>
+      <div class="progress"><i id="progress-i"></i></div>
+      <span class="qcount" id="qcount"></span>
+    </div>
   </div>
-  <h2 class="qtext" id="qtext"></h2>
-  <div class="opts" id="opts"></div>
+  <div class="wrap">
+    <div class="qlist" id="qlist"></div>
+  </div>
+  <div class="finishbar" id="finishbar"><div class="wrap"><button class="btn-lp pink" id="finishquiz"><span class="l1">結果を見る<span class="arrow">→</span></span></button></div></div>
+</section>
+
+<!-- ===== Types list ===== -->
+<section class="screen" id="screen-types">
+  <div class="wrap">
+    <header class="site"><span class="logo">オトタイプ<span class="dot">♪</span></span></header>
+    <h2 class="pagetitle">全16タイプ一覧</h2>
+    <p class="pagelead">タップすると、それぞれの聴き方の詳しい解説とプレイリストレシピが見られます。</p>
+    <div class="typelist" id="typelist"></div>
+    <div class="actions">
+      <button class="btn primary" id="tstart">自分のタイプを診断する（無料・約2分）</button>
+      <button class="btn" id="tback">トップにもどる</button>
+    </div>
+    <footer><p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p></footer>
+  </div>
 </section>
 
 <!-- ===== Result ===== -->
 <section class="screen" id="screen-result">
-  <div class="rcard">
-    <p class="rcode" id="rcode"></p>
-    <h2 class="rname" id="rname"></h2>
-    <p class="rcatch" id="rcatch"></p>
-    <p class="rsub" id="rsub"></p>
-    <div class="chips" id="rchips"></div>
+  <div class="wrap">
+    <div class="rcard">
+      <p class="rcode" id="rcode"></p>
+      <h2 class="rname" id="rname"></h2>
+      <p class="rcatch" id="rcatch"></p>
+      <p class="rsub" id="rsub"></p>
+      <div class="chips" id="rchips"></div>
+    </div>
+    <div class="rtext" id="rtext"></div>
+    <div class="panel">
+      <h3>あなたのタイプの代表アーティスト</h3>
+      <p id="rartists" class="strong"></p>
+    </div>
+    <div class="axes" id="raxes"></div>
+    <div class="panel playlist">
+      <h3>🎵 あなた用プレイリストレシピ</h3>
+      <p class="pl-title" id="pltitle"></p>
+      <ol id="plrecipe"></ol>
+      <p class="pl-hint">レシピの素材はここから探せる：</p>
+      <div class="pl-links" id="pllinks"></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="savecard">シェアカードを保存</button>
+      <div class="nick"><input id="nick" maxlength="20" placeholder="ニックネーム（任意・リンクに載ります）"></div>
+      <button class="btn" id="makelink">友達と相性チェック（リンクを送る）</button>
+      <button class="btn" id="rtypes">ほかの15タイプも見る</button>
+      <button class="btn ghost" id="retry">もう一度診断する</button>
+    </div>
+    <footer><p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p></footer>
   </div>
-  <div class="rtext" id="rtext"></div>
-  <div class="artists">
-    <h3>あなたのタイプの代表アーティスト</h3>
-    <p id="rartists"></p>
-  </div>
-  <div class="axes" id="raxes"></div>
-  <div class="actions">
-    <button class="btn primary" id="savecard">シェアカードを保存</button>
-    <div class="nick"><input id="nick" maxlength="20" placeholder="ニックネーム（任意・リンクに載ります）"></div>
-    <button class="btn" id="makelink">友達と相性チェック（リンクを送る）</button>
-    <button class="btn" id="retry">もう一度診断する</button>
-  </div>
-  <footer>
-    <p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p>
-  </footer>
 </section>
 
 <!-- ===== Compat ===== -->
 <section class="screen" id="screen-compat">
-  <div class="vs" id="vs"></div>
-  <div class="rating">
-    <p class="lbl">ライブ相性</p>
-    <p class="big" id="crating"></p>
+  <div class="wrap">
+    <div class="vs" id="vs"></div>
+    <div class="rating">
+      <p class="lbl">ライブ相性</p>
+      <p class="big" id="crating"></p>
+    </div>
+    <div class="rtext" id="ctext"></div>
+    <div class="panel">
+      <h3>一緒に行くならこの系統</h3>
+      <p id="clive" class="strong"></p>
+    </div>
+    <div class="panel">
+      <h3>そのまま送れる誘い文句</h3>
+      <p id="cinvite"></p>
+      <button class="copybtn" id="copyinvite">コピーする</button>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="cshowmine">自分の結果をくわしく見る</button>
+      <button class="btn ghost" id="cretry">もう一度診断する</button>
+    </div>
+    <footer><p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p></footer>
   </div>
-  <div class="rtext" id="ctext"></div>
-  <div class="artists">
-    <h3>一緒に行くならこの系統</h3>
-    <p id="clive"></p>
-  </div>
-  <div class="artists">
-    <h3>そのまま送れる誘い文句</h3>
-    <p id="cinvite"></p>
-    <button class="copybtn" id="copyinvite">コピーする</button>
-  </div>
-  <div class="actions">
-    <button class="btn primary" id="cshowmine">自分の結果をくわしく見る</button>
-    <button class="btn" id="cretry">もう一度診断する</button>
-  </div>
-  <footer>
-    <p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p>
-  </footer>
 </section>
 
-</div>
 <div class="toast" id="toast"></div>
-<script src="config.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -1,11 +1,12 @@
 # オトタイプ — あなたの「聴き方」タイプ診断
 
-音楽の知識ゼロでOK。20問(約1分)に答えると、音楽の「聴き方」を**4軸×16タイプ**で判定。
+音楽の知識ゼロでOK。20問(約2分)に答えると、音楽の「聴き方」を**4軸×16タイプ**で判定。
 友達に相性リンクを送って、ライブ相性(◎/○/△)と「そのまま送れる誘い文句」までチェックできる。
+タイプ別の**プレイリストレシピ**と**全16タイプ一覧**つき。
 
 - フロント: 素のHTML/CSS/JS(ビルドなし・ライブラリなし・Google Fontsのみ)
-- バックエンド: Cloudflare Worker 1本(Anthropic APIの中継)。**Workerなしでもテンプレ文で全機能が動く**
-- DBなし: 相性リンクは回答列をURLクエリに載せるステートレス方式
+- バックエンドなし・DBなし: 解説はタイプ別テンプレ、相性リンクは回答列をURLクエリに載せるステートレス方式
+- 質問形式: 7段階の同意スケール(そう思う ↔ そう思わない)×20問・1ページスクロール式
 
 ## 4軸と16タイプ
 
@@ -17,6 +18,9 @@
 | 探し方 | **T**(王道) ↔ **M**(開拓) |
 
 タイプコードは4文字(例: `FSDT`=フェス大合唱型)。定義は `data/types.json`。
+
+判定は各設問の同意度(+3〜-3)×設問の向き(`dir`)を軸ごとに合計し、符号で極を決める(同点はpos極・決定的)。
+実装は `scoring.mjs` が唯一の真実源で、`app.js` と `tools/selftest.mjs` が同じ関数をimportする。
 
 ---
 
@@ -35,57 +39,35 @@ python -m http.server 8080
 # → http://localhost:8080/
 ```
 
-## 2. Worker(AI解説)をデプロイする — 任意
+## 2. 質問・タイプ・プレイリストの編集
 
-Workerなしでも全機能が動く(テンプレ文)。AI解説を有効にする場合のみ:
-
-```
-cd worker
-npm install -g wrangler          # 未導入なら
-wrangler login
-wrangler secret put ANTHROPIC_API_KEY   # APIキーを対話で貼り付け(コードに書かない)
-wrangler deploy
-```
-
-1. デプロイ後に表示されるURL(例 `https://ototype-ai.xxx.workers.dev`)を `config.js` の `WORKER_URL` に設定
-2. `worker/src/index.js` 冒頭の `ALLOWED_ORIGIN` を自分のGitHub Pagesのオリジン(例 `https://<ユーザー名>.github.io`)に差し替え
-3. モデルは既定 `claude-haiku-4-5-20251001`。変えたい場合は `wrangler.toml` の `[vars] MODEL` を設定。最新のモデル名は https://docs.claude.com で確認できる
-4. レート制限はIPごと10リクエスト/10分(超過429→フロントは自動でテンプレ文に切替)
-
-## 3. アーティストリストの差し替え方
-
-`data/types.json` の各タイプの `artists` 配列(テキストのみ)を編集するだけ。コードへのハードコードはない。
-編集後、OGPページの文言には影響しないが、念のため:
-
-```
-python tools/gen_r_pages.py     # r/*.html 再生成(タイプ名/キャッチ変更時)
-```
+- 質問: `data/questions.json`。各設問は `{ axis, dir, text }`。`dir: 1`=同意でpos極(F/L/D/T)、`dir: -1`=同意でneg極(R/S/E/M)。各軸5問を維持すること
+- タイプ: `data/types.json` の `name / catch / keywords / color / artists / fallback(解説文) / playlist(レシピ)`
+- 相性: `data/compat.json` は `python tools/gen_compat.py` で軸一致数から再生成できる
 
 **法務ルール**: アーティストは名前のテキスト表記のみ。写真・ロゴ・歌詞・音源・ジャケットは使わない。
 フッターの「本診断はエンタメ目的です。アーティスト各位とは無関係です」を消さない。
 
-## 4. OGP画像の再生成手順
+## 3. OGP画像とシェア用ページの再生成
 
-1. ローカルサーバを立てる: `python -m http.server 8080`
-2. ブラウザで `http://localhost:8080/tools/ogp-generator.html` を開く
-3. 「16枚を一括ダウンロード」→ ダウンロードされた `{typeId}.png` を `assets/ogp/` に上書き配置
+- `python tools/gen_r_pages.py` … `r/{typeId}.html` ×16 を再生成(タイプ名/キャッチ変更時)
+- OGP画像: `python -m http.server 8080` → ブラウザで `http://localhost:8080/tools/ogp-generator.html` →「16枚を一括ダウンロード」→ `assets/ogp/` に上書き(npm等の依存は不要)
 
-(npm等の依存は不要。Canvas描画のみで生成される)
-
-## 5. セルフテスト
+## 4. セルフテスト
 
 ```
 node tools/selftest.mjs
 ```
 
-- ランダム回答40,000回で全16タイプの出現率が2%以上であること
-- 回帰テスト(全pos極→FLDT / 全neg極→RSEM / 混合→FSDM)
-- 判定ロジックは `scoring.mjs` が唯一の実装で、アプリ本体(`app.js`)とテストが同じ関数をimportする
+- 構造: 16タイプ・各軸5問・全タイプにプレイリスト定義
+- バランス: ランダム回答40,000回で全16タイプの出現率が2%以上
+- 回帰: 全問同意→FLDT / 全問不同意→RSEM / 全問中立→FLDT(同点はpos極) / pos方向最大回答→FLDT・全margin15・純度高
+- 不変条件: 空回答・範囲外回答で例外を出さない
 
 ## 構成
 
 ```
-index.html  app.js  style.css  config.js  scoring.mjs
+index.html  app.js  style.css  scoring.mjs
 data/types.json  data/questions.json  data/compat.json
 r/{typeId}.html ×16          … シェア用OGPページ
 assets/ogp/{typeId}.png ×16  … OGP画像
@@ -93,7 +75,6 @@ tools/ogp-generator.html     … OGP画像の再生成(ブラウザ)
 tools/gen_r_pages.py         … r/*.html の再生成
 tools/gen_compat.py          … data/compat.json の再生成(軸一致数ベース)
 tools/selftest.mjs           … セルフテスト(node)
-worker/src/index.js  worker/wrangler.toml
 ```
 
 ## 注意
