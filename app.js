@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）、キャラは chars.mjs を import する。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "5";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=5";
-import { charSVG } from "./chars.mjs?v=5";
+const ASSET_V = "6";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=6";
+import { charSVG } from "./chars.mjs?v=6";
 
 // ---------- state ----------
 let TYPES = null, QUESTIONS = null, COMPAT = null;
