@@ -1,6 +1,7 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
-// 判定ロジックは scoring.mjs（単一の真実源）を import する。
+// 判定ロジックは scoring.mjs（単一の真実源）、キャラは chars.mjs を import する。
 import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs";
+import { charSVG } from "./chars.mjs";
 
 // ---------- state ----------
 let TYPES = null, QUESTIONS = null, COMPAT = null;
@@ -32,7 +33,16 @@ async function boot() {
     banner.innerHTML = `🎧 <b>${esc(inviter.nick || "友達")}</b>さんから相性チェックの招待が届いています。診断すると2人のライブ相性がわかる！`;
     banner.style.display = "block";
   }
+  renderCharRow();
   route();
+}
+
+// LPのキャラ行進（マーキー用に2周分並べて -50% ループ）
+function renderCharRow() {
+  const slots = Object.values(TYPES).map((t) =>
+    `<span class="cslot">${charSVG(t, 64)}<span class="cname">${esc(t.name)}</span></span>`
+  ).join("");
+  $("#chartrack").innerHTML = slots + slots;
 }
 
 // ---------- router ----------
@@ -125,6 +135,7 @@ function applyTypeColor(color) { document.documentElement.style.setProperty("--t
 function showResult() {
   const t = typeOf(myResult.code);
   applyTypeColor(t.color);
+  $("#rchar").innerHTML = charSVG(t, 116);
   $("#rcode").textContent = [...myResult.code].join(" ");
   $("#rname").textContent = t.name;
   $("#rcatch").textContent = t.catch;
@@ -141,8 +152,15 @@ function showResult() {
 function renderAxes() {
   $("#raxes").innerHTML = AXES.map((ax) => {
     const total = myResult.totals[ax.id]; // +AXIS_MAX(pos極寄り) 〜 -AXIS_MAX(neg極寄り)
-    const ratio = ((AXIS_MAX - total) / (AXIS_MAX * 2)) * 100; // 左=pos極, 右=neg極
-    return `<div class="axisrow"><span>${ax.posLabel}</span><div class="bar"><i style="left:${ratio}%"></i></div><span style="text-align:right">${ax.negLabel}</span></div>`;
+    const posPct = Math.round(((total + AXIS_MAX) / (AXIS_MAX * 2)) * 100);
+    const negPct = 100 - posPct;
+    const ratio = 100 - posPct; // マーカー位置（左=pos極, 右=neg極）
+    const posWin = total >= 0;
+    return `<div class="axisrow">
+      <span class="axlab${posWin ? " win" : ""}">${ax.posLabel}<b class="pct">${posPct}%</b></span>
+      <div class="bar"><i style="left:${ratio}%"></i></div>
+      <span class="axlab r${posWin ? "" : " win"}">${ax.negLabel}<b class="pct">${negPct}%</b></span>
+    </div>`;
   }).join("");
 }
 
@@ -170,6 +188,7 @@ function renderTypesList() {
   $("#typelist").innerHTML = Object.values(TYPES).map((t) => `
     <div class="tcard" id="tc-${t.id}">
       <button class="tcard-head" data-t="${t.id}">
+        <span class="tchar">${charSVG(t, 46)}</span>
         <span class="tc" style="background:${esc(t.color)}">${t.id}</span>
         <span class="tn">${esc(t.name)}</span>
         <span class="tarrow">›</span>
@@ -189,7 +208,17 @@ function renderTypesList() {
 }
 
 // ---------- share card (Canvas) ----------
-function drawCard(w, h) {
+function loadCharImage(t) { // キャラSVG→Image（Canvasへ合成するため）
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(new Blob([charSVG(t, 480)], { type: "image/svg+xml" }));
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); }; // 失敗してもカードは作る
+    img.src = url;
+  });
+}
+
+async function drawCard(w, h) {
   const t = typeOf(myResult.code);
   const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
   const x = cv.getContext("2d");
@@ -201,28 +230,33 @@ function drawCard(w, h) {
   const cxx = w / 2; const S = w / 1080; // scale基準
   x.textAlign = "center"; x.fillStyle = "#FFFFFF";
   x.font = `800 ${44 * S}px 'M PLUS Rounded 1c',sans-serif`;
-  x.fillText("私の聴き方タイプ", cxx, h * 0.18);
+  x.fillText("私の聴き方タイプ", cxx, h * 0.14);
   x.font = `900 ${86 * S}px 'M PLUS Rounded 1c',sans-serif`;
-  x.fillText(t.name, cxx, h * 0.18 + 120 * S);
+  x.fillText(t.name, cxx, h * 0.14 + 120 * S);
   x.font = `700 ${40 * S}px 'M PLUS Rounded 1c',sans-serif`;
   x.fillStyle = "rgba(255,255,255,.92)";
-  x.fillText(t.catch, cxx, h * 0.18 + 190 * S);
+  x.fillText(t.catch, cxx, h * 0.14 + 190 * S);
   x.font = `800 ${34 * S}px 'M PLUS Rounded 1c',sans-serif`;
   x.fillStyle = "rgba(255,255,255,.8)";
-  x.fillText([...myResult.code].join(" "), cxx, h * 0.18 + 250 * S);
+  x.fillText([...myResult.code].join(" "), cxx, h * 0.14 + 250 * S);
+  const img = await loadCharImage(t);
+  if (img) {
+    const cw = 430 * S;
+    x.drawImage(img, cxx - cw / 2, h * 0.40, cw, cw);
+  }
   x.font = `700 ${36 * S}px 'M PLUS Rounded 1c',sans-serif`;
   x.fillStyle = "#FFFFFF";
-  t.artists.slice(0, 3).forEach((a, i) => x.fillText(a, cxx, h * 0.55 + i * 58 * S));
+  t.artists.slice(0, 3).forEach((a, i) => x.fillText(a, cxx, h * 0.68 + i * 58 * S));
   x.font = `700 ${30 * S}px 'M PLUS Rounded 1c',sans-serif`;
   x.fillStyle = "rgba(255,255,255,.75)";
-  x.fillText("#オトタイプ", cxx, h * 0.86);
-  x.fillText(siteBase(), cxx, h * 0.86 + 46 * S);
+  x.fillText("#オトタイプ", cxx, h * 0.88);
+  x.fillText(siteBase(), cxx, h * 0.88 + 46 * S);
   return cv;
 }
 function siteBase() { return location.origin + location.pathname.replace(/index\.html$/, ""); }
 
 $("#savecard").addEventListener("click", async () => {
-  const cv = drawCard(1080, 1920);
+  const cv = await drawCard(1080, 1920);
   cv.toBlob(async (blob) => {
     const file = new File([blob], `ototype-${myResult.code}.png`, { type: "image/png" });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {

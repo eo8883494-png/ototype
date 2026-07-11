@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { judge, AXES, SCALE } from "../scoring.mjs";
+import { charSVG } from "../chars.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const QUESTIONS = JSON.parse(readFileSync(join(ROOT, "data/questions.json"), "utf-8"));
@@ -24,6 +25,11 @@ for (const code of CODES) {
 for (const ax of AXES) {
   const n = QUESTIONS.filter((q) => q.axis === ax.id).length;
   if (n === 5) ok(`軸 ${ax.id}: 5問`); else fail(`軸 ${ax.id}: ${n}問（5であるべき）`);
+}
+{ // キャラ生成: 全16タイプでSVGが返り、パーツ構成が全て異なる
+  const svgs = CODES.map((c) => charSVG(TYPES[c]));
+  if (svgs.every((s) => s.startsWith("<svg"))) ok("charSVG: 16タイプ全てSVG生成"); else fail("charSVG: SVGでない出力あり");
+  if (new Set(svgs).size === 16) ok("charSVG: 16体すべて異なる見た目"); else fail("charSVG: 重複キャラあり");
 }
 
 // 1) バランス：ランダム回答 4万回で全16タイプが 2% 以上出現
