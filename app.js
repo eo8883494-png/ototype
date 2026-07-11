@@ -1,7 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）、キャラは chars.mjs を import する。
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs";
-import { charSVG } from "./chars.mjs";
+// ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
+const ASSET_V = "5";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=5";
+import { charSVG } from "./chars.mjs?v=5";
 
 // ---------- state ----------
 let TYPES = null, QUESTIONS = null, COMPAT = null;
@@ -18,9 +20,9 @@ const LINK_V = "2"; // 招待リンクの版（v2=7段階回答）
 // ---------- boot ----------
 async function boot() {
   const [t, q, c] = await Promise.all([
-    fetch("data/types.json").then((r) => r.json()),
-    fetch("data/questions.json").then((r) => r.json()),
-    fetch("data/compat.json").then((r) => r.json()),
+    fetch(`data/types.json?v=${ASSET_V}`).then((r) => r.json()),
+    fetch(`data/questions.json?v=${ASSET_V}`).then((r) => r.json()),
+    fetch(`data/compat.json?v=${ASSET_V}`).then((r) => r.json()),
   ]);
   TYPES = t; QUESTIONS = q; COMPAT = c;
 
