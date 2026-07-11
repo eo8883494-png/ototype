@@ -49,13 +49,16 @@ function renderCharRow() {
 window.addEventListener("hashchange", route);
 function route() {
   const h = location.hash || "#/";
-  const id = h.startsWith("#/q") ? "quiz" : h.startsWith("#/r") ? "result" : h.startsWith("#/c") ? "compat" : h.startsWith("#/t") ? "types" : "lp";
+  const detailCode = h.match(/^#\/t\/([FR][LS][DE][TM])$/)?.[1];
+  const id = h.startsWith("#/q") ? "quiz" : h.startsWith("#/r") ? "result" : h.startsWith("#/c") ? "compat"
+    : (detailCode && TYPES[detailCode]) ? "typedetail" : h.startsWith("#/t") ? "types" : "lp";
   // 状態を持たない画面への直リンクはLPへ（相性リンクはクエリで再現されるので安全）
   if ((id === "result" || id === "compat") && !myResult) { location.hash = "#/"; return; }
   document.querySelectorAll(".screen").forEach((el) => el.classList.remove("active"));
   $("#screen-" + id).classList.add("active");
   if (id === "quiz" && !$("#qlist").childElementCount) renderQuiz();
-  if (id === "types") renderTypesList();
+  if (id === "types") renderTypesGrid();
+  if (id === "typedetail") renderTypeDetail(detailCode);
   window.scrollTo(0, 0);
 }
 
@@ -179,36 +182,61 @@ function renderPlaylist(t) {
 
 $("#retry").addEventListener("click", () => { inviter = null; myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
 $("#rtypes").addEventListener("click", () => { location.hash = "#/t"; });
+$("#rdetail").addEventListener("click", () => { if (myResult) location.hash = "#/t/" + myResult.code; });
 
-// ---------- types list ----------
+// ---------- types zukan（キャラグリッド） ----------
 $("#gotypes").addEventListener("click", () => { location.hash = "#/t"; });
 $("#tstart").addEventListener("click", startQuiz);
+$("#tdstart").addEventListener("click", startQuiz);
 $("#tback").addEventListener("click", () => { location.hash = "#/"; });
+$("#tdback").addEventListener("click", () => { location.hash = "#/t"; });
 
 let typesRendered = false;
-function renderTypesList() {
+function renderTypesGrid() {
   if (typesRendered) return;
   typesRendered = true;
-  $("#typelist").innerHTML = Object.values(TYPES).map((t) => `
-    <div class="tcard" id="tc-${t.id}">
-      <button class="tcard-head" data-t="${t.id}">
-        <span class="tchar">${charSVG(t, 46)}</span>
-        <span class="tc" style="background:${esc(t.color)}">${t.id}</span>
-        <span class="tn">${esc(t.name)}</span>
-        <span class="tarrow">›</span>
-      </button>
-      <div class="tcard-body">
-        <p class="tcatch" style="color:${esc(t.color)}">${esc(t.catch)}</p>
-        <p class="tdesc">${esc(t.fallback)}</p>
-        <h4>代表アーティスト</h4>
-        <p class="tart">${t.artists.map(esc).join(" / ")}</p>
-        <h4>プレイリストレシピ「${esc(t.playlist.title)}」</h4>
-        <p class="tpl">${t.playlist.recipe.map(esc).join("<br>")}</p>
-      </div>
-    </div>`).join("");
-  document.querySelectorAll(".tcard-head").forEach((b) =>
-    b.addEventListener("click", () => $("#tc-" + b.dataset.t).classList.toggle("open"))
-  );
+  $("#typegrid").innerHTML = Object.values(TYPES).map((t) => `
+    <a class="ttile" href="#/t/${t.id}" style="background:color-mix(in srgb, ${esc(t.color)} 10%, #fff);border-color:color-mix(in srgb, ${esc(t.color)} 35%, #fff)">
+      ${charSVG(t, 86)}
+      <span class="tc" style="background:${esc(t.color)}">${t.id}</span>
+      <span class="tn">${esc(t.name)}</span>
+    </a>`).join("");
+}
+
+// ---------- type detail（個別紹介ページ） ----------
+function compatPartners(code) { // ライブ相性◎の4タイプ（1軸だけ違う相手）
+  return Object.keys(TYPES).filter((c) => c !== code && (COMPAT[compatKey(code, c)] || {}).rating === "◎");
+}
+
+function renderTypeDetail(code) {
+  const t = TYPES[code];
+  const d = t.details;
+  applyTypeColor(t.color);
+  $("#tdbody").innerHTML = `
+    <div class="rcard">
+      <div class="rchar">${charSVG(t, 130)}</div>
+      <p class="rcode">${[...t.id].join(" ")}</p>
+      <h2 class="rname">${esc(t.name)}</h2>
+      <p class="rcatch">${esc(t.catch)}</p>
+      <div class="chips">${t.keywords.map((k) => `<span class="chip">#${esc(k)}</span>`).join("")}</div>
+    </div>
+    <div class="panel"><h3>どんなタイプ？</h3><p class="tdtext">${esc(d.intro)}</p></div>
+    <div class="panel"><h3>${esc(t.name)}のあるある</h3><ul class="aruaru">${d.aruaru.map((a) => `<li>${esc(a)}</li>`).join("")}</ul></div>
+    <div class="panel"><h3>ライブ・現場での姿</h3><p class="tdtext">${esc(d.live)}</p></div>
+    <div class="panel"><h3>この聴き方の強み</h3><p class="tdtext">${esc(d.strength)}</p></div>
+    <div class="panel"><h3>代表アーティスト</h3><p class="strong">${t.artists.map(esc).join(" / ")}</p></div>
+    <div class="panel playlist">
+      <h3>🎵 プレイリストレシピ</h3>
+      <p class="pl-title">「${esc(t.playlist.title)}」</p>
+      <ol>${t.playlist.recipe.map((r) => `<li>${esc(r)}</li>`).join("")}</ol>
+    </div>
+    <div class="panel">
+      <h3>ライブ相性◎のタイプ</h3>
+      <div class="buddies">${compatPartners(code).map((c) => {
+        const b = TYPES[c];
+        return `<a class="buddy" href="#/t/${c}">${charSVG(b, 56)}<span>${esc(b.name)}</span></a>`;
+      }).join("")}</div>
+    </div>`;
 }
 
 // ---------- share card (Canvas) ----------

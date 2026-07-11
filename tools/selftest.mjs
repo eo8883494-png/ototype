@@ -21,6 +21,8 @@ for (const code of CODES) {
   const valid = code.length === 4 && AXES.every((ax, i) => code[i] === ax.pos || code[i] === ax.neg);
   if (!valid) fail(`不正なタイプコード: ${code}`);
   if (!TYPES[code].playlist || !TYPES[code].playlist.title || TYPES[code].playlist.recipe.length !== 3) fail(`playlist不備: ${code}`);
+  const d = TYPES[code].details;
+  if (!d || d.intro.length < 180 || d.aruaru.length !== 3 || d.live.length < 50 || d.strength.length < 50) fail(`details不備: ${code}`);
 }
 for (const ax of AXES) {
   const n = QUESTIONS.filter((q) => q.axis === ax.id).length;

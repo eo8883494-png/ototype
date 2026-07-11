@@ -74,18 +74,31 @@
   <div class="finishbar" id="finishbar"><div class="wrap"><button class="btn-lp pink" id="finishquiz"><span class="l1">結果を見る<span class="arrow">→</span></span></button></div></div>
 </section>
 
-<!-- ===== Types list ===== -->
+<!-- ===== Types zukan (キャラグリッド) ===== -->
 <section class="screen" id="screen-types">
   <div class="wrap">
     <header class="site"><span class="logo">オトタイプ<span class="dot">♪</span></span></header>
-    <h2 class="pagetitle">全16タイプ一覧</h2>
-    <p class="pagelead">タップすると、それぞれの聴き方の詳しい解説とプレイリストレシピが見られます。</p>
-    <div class="typelist" id="typelist"></div>
+    <h2 class="pagetitle">16タイプ図鑑</h2>
+    <p class="pagelead">キャラをタップすると、そのタイプの紹介ページへ。</p>
+    <div class="typegrid" id="typegrid"></div>
     <div class="actions">
       <button class="btn primary" id="tstart">自分のタイプを診断する（無料・約2分）</button>
       <button class="btn" id="tback">トップにもどる</button>
     </div>
     <footer><p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p></footer>
+  </div>
+</section>
+
+<!-- ===== Type detail (個別紹介ページ) ===== -->
+<section class="screen" id="screen-typedetail">
+  <div class="wrap">
+    <header class="site"><span class="logo">オトタイプ<span class="dot">♪</span></span></header>
+    <div id="tdbody"></div>
+    <div class="actions">
+      <button class="btn primary" id="tdstart">自分のタイプを診断する（無料・約2分）</button>
+      <button class="btn" id="tdback">図鑑にもどる</button>
+    </div>
+    <footer><p>本診断はエンタメ目的です。アーティスト各位とは無関係です。アーティスト名は紹介のためのテキスト表記のみで、公認・提携を意味しません。</p></footer>
   </div>
 </section>
 
@@ -117,7 +130,8 @@
       <button class="btn primary" id="savecard">シェアカードを保存</button>
       <div class="nick"><input id="nick" maxlength="20" placeholder="ニックネーム（任意・リンクに載ります）"></div>
       <button class="btn" id="makelink">友達と相性チェック（リンクを送る）</button>
-      <button class="btn" id="rtypes">ほかの15タイプも見る</button>
+      <button class="btn" id="rdetail">このタイプをもっとくわしく</button>
+      <button class="btn" id="rtypes">16タイプ図鑑を見る</button>
       <button class="btn ghost" id="retry">もう一度診断する</button>
     </div>
     <footer><p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p></footer>
