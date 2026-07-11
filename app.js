@@ -149,17 +149,21 @@ function showResult() {
   location.hash = "#/r";
 }
 
+const AXIS_COLORS = { place: "#4A9FD8", core: "#E8B33C", into: "#4FB07A", find: "#9B6BE0" };
+
 function renderAxes() {
-  $("#raxes").innerHTML = AXES.map((ax) => {
+  $("#raxes").innerHTML = `<h3 class="axtitle">聴き方の特性</h3>` + AXES.map((ax) => {
     const total = myResult.totals[ax.id]; // +AXIS_MAX(pos極寄り) 〜 -AXIS_MAX(neg極寄り)
     const posPct = Math.round(((total + AXIS_MAX) / (AXIS_MAX * 2)) * 100);
-    const negPct = 100 - posPct;
-    const ratio = 100 - posPct; // マーカー位置（左=pos極, 右=neg極）
     const posWin = total >= 0;
-    return `<div class="axisrow">
-      <span class="axlab${posWin ? " win" : ""}">${ax.posLabel}<b class="pct">${posPct}%</b></span>
-      <div class="bar"><i style="left:${ratio}%"></i></div>
-      <span class="axlab r${posWin ? "" : " win"}">${ax.negLabel}<b class="pct">${negPct}%</b></span>
+    const winPct = posWin ? posPct : 100 - posPct;
+    const winLabel = posWin ? ax.posLabel : ax.negLabel;
+    const ratio = 100 - posPct; // マーカー位置（左=pos極, 右=neg極、勝ち側に寄る）
+    const c = AXIS_COLORS[ax.id];
+    return `<div class="axisblock">
+      <p class="axhead">${ax.label}: <b style="color:${c}">${winPct}% ${winLabel}</b></p>
+      <div class="bar2" style="background:${c}"><i style="left:${ratio}%;border-color:${c}"></i></div>
+      <div class="axpoles"><span class="${posWin ? "win" : ""}">${ax.posLabel}</span><span class="${posWin ? "" : "win"}">${ax.negLabel}</span></div>
     </div>`;
   }).join("");
 }

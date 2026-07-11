@@ -4,10 +4,10 @@
 
 // 4つの軸。各軸は pos / neg の2極。タイプコードは place→core→into→find の順に連結。
 export const AXES = [
-  { id: "place", pos: "F", neg: "R", posLabel: "みんな", negLabel: "ひとり" }, // 場所感
-  { id: "core",  pos: "L", neg: "S", posLabel: "歌詞",   negLabel: "音"     }, // 刺さる核
-  { id: "into",  pos: "D", neg: "E", posLabel: "熱狂",   negLabel: "ゆるり" }, // のめり込み
-  { id: "find",  pos: "T", neg: "M", posLabel: "王道",   negLabel: "開拓"   }, // 探し方
+  { id: "place", label: "場所感",     pos: "F", neg: "R", posLabel: "みんな", negLabel: "ひとり" },
+  { id: "core",  label: "刺さる核",   pos: "L", neg: "S", posLabel: "歌詞",   negLabel: "音"     },
+  { id: "into",  label: "のめり込み", pos: "D", neg: "E", posLabel: "熱狂",   negLabel: "ゆるり" },
+  { id: "find",  label: "探し方",     pos: "T", neg: "M", posLabel: "王道",   negLabel: "開拓"   },
 ];
 
 export const SCALE = 7;           // 7段階（0=そう思う 〜 6=そう思わない、3=中立）
