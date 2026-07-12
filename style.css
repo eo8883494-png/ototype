@@ -23,7 +23,20 @@ a{color:var(--ink)}
 button{font-family:inherit;cursor:pointer}
 b{font-weight:900}
 
-.site{display:flex;justify-content:center;padding:18px 0 4px}
+.site{display:flex;justify-content:center;padding:18px 0 4px;position:relative}
+.autharea{position:absolute;right:0;top:50%;transform:translateY(-42%);display:flex;gap:12px}
+.alink{background:none;border:none;font-family:inherit;font-weight:800;font-size:12.5px;color:var(--muted);cursor:pointer;padding:4px 2px}
+.linklike{background:none;border:none;font-family:inherit;font-weight:800;font-size:11px;color:var(--pink);cursor:pointer;text-decoration:underline}
+/* きろく画面 */
+.histh{font-size:14px;font-weight:900;margin:18px 0 8px}
+.hist-empty{font-size:13px;color:var(--muted);line-height:1.9;text-align:center;margin:14px 0}
+.hrow{display:flex;align-items:center;gap:10px;width:100%;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:8px 12px;margin:6px 0;text-align:left;font-family:inherit;cursor:pointer}
+.hrow.flat{cursor:default}
+.hrow .hmeta{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.5}
+.hrow .hmeta b{font-size:13.5px;font-weight:900;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hrow .hmeta i{font-style:normal;font-size:11px;color:var(--muted)}
+.hrow .hrate{flex:none;font-size:22px;font-weight:900;width:1.3em;text-align:center}
+.hrow .chimg.full{width:44px;height:44px;object-fit:contain}
 .logo{font-weight:900;color:var(--ink);font-size:16px;letter-spacing:.06em}
 .logo .dot{color:var(--pink)}
 

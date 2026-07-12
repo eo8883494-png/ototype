@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "21";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=21";
-import { pickWeekly } from "./playlist.mjs?v=21";
+const ASSET_V = "22";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=22";
+import { pickWeekly } from "./playlist.mjs?v=22";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
@@ -50,6 +50,137 @@ async function boot() {
   renderCharRow();
   renderSideDeco();
   route();
+  initFirebase(); // 記録機能(任意ログイン)。失敗してもサイト本体は動く
+}
+
+// ---------- アカウント/きろく(Firebase・zzZFMと共通アカウント) ----------
+// ログインは任意。ログイン中のみ診断結果と相性チェックを本人のアカウントに保存する。
+// 保存先: ototype/users/{uid}/results, ototype/users/{uid}/compats
+const FB = { app: null, auth: null, db: null, A: null, D: null, user: null };
+
+async function initFirebase() {
+  try {
+    const [appM, A, D] = await Promise.all([
+      import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js"),
+      import("https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js"),
+    ]);
+    FB.app = appM.initializeApp({
+      apiKey: "AIzaSyD3KXbGaNLcfVImgeWPkdwl8byS-c54YYE",
+      authDomain: "zzzfm-beaaa.firebaseapp.com",
+      databaseURL: "https://zzzfm-beaaa-default-rtdb.firebaseio.com",
+      projectId: "zzzfm-beaaa",
+    });
+    FB.A = A; FB.D = D;
+    FB.auth = A.getAuth(FB.app);
+    FB.db = D.getDatabase(FB.app);
+    A.onAuthStateChanged(FB.auth, (u) => {
+      FB.user = u || null;
+      updateAuthUI();
+      if (document.body.dataset.screen === "history") renderHistory(); // きろく画面を開いたままの状態変化に追従
+    });
+  } catch (e) { /* SDK読込失敗時は記録機能を出さないだけ */ }
+}
+
+function inAppBrowser() {
+  return /Instagram|Line\/|FBAN|FBAV|Twitter/i.test(navigator.userAgent);
+}
+
+async function login() {
+  if (!FB.auth) { toast("読み込み中です。少し待ってもう一度どうぞ"); return; }
+  if (inAppBrowser()) { toast("アプリ内ブラウザではログインできません。SafariやChromeで開いてください"); return; }
+  try {
+    await FB.A.signInWithPopup(FB.auth, new FB.A.GoogleAuthProvider());
+    toast("ログインしました。これから診断すると自動で記録されます");
+  } catch (e) {
+    if (e && (e.code === "auth/popup-blocked" || e.code === "auth/cancelled-popup-request")) {
+      try { await FB.A.signInWithRedirect(FB.auth, new FB.A.GoogleAuthProvider()); } catch (e2) { toast("ログインできませんでした"); }
+    } else if (!(e && e.code === "auth/popup-closed-by-user")) {
+      toast("ログインできませんでした");
+    }
+  }
+}
+async function logout() { if (FB.auth) { await FB.A.signOut(FB.auth); toast("ログアウトしました"); } }
+
+function updateAuthUI() {
+  const b = $("#authbtn"), k = $("#histbtn"), note = $("#loginnote");
+  if (!b) return;
+  if (FB.user) {
+    b.textContent = "ログアウト";
+    k.style.display = "";
+    if (note) note.style.display = "none";
+  } else {
+    b.textContent = "ログイン";
+    k.style.display = "none";
+    if (note) note.style.display = "";
+  }
+}
+
+function userRef(kind) {
+  return FB.D.ref(FB.db, `ototype/users/${FB.user.uid}/${kind}`);
+}
+
+async function saveRecord(kind, data) {
+  if (!FB.user || !FB.db) return false;
+  try {
+    await FB.D.push(userRef(kind), data);
+    return true;
+  } catch (e) { return false; }
+}
+
+// ---------- きろく画面 ----------
+async function renderHistory() {
+  const box = $("#histbody");
+  if (!FB.user) {
+    box.innerHTML = `<p class="hist-empty">ログインすると、診断結果と相性チェックのきろくが自動で残ります。<br>アカウントはzzZFMと共通です。</p>
+      <div class="actions"><button class="btn primary" id="histlogin">Googleでログイン</button></div>`;
+    $("#histlogin").addEventListener("click", login);
+    return;
+  }
+  box.innerHTML = `<p class="hist-empty">読み込み中…</p>`;
+  try {
+    const [rs, cs] = await Promise.all([
+      FB.D.get(FB.D.query(userRef("results"), FB.D.limitToLast(50))),
+      FB.D.get(FB.D.query(userRef("compats"), FB.D.limitToLast(50))),
+    ]);
+    const results = []; rs.forEach((s) => results.push(s.val()));
+    const compats = []; cs.forEach((s) => compats.push(s.val()));
+    results.reverse(); compats.reverse();
+    const fmt = (ts) => { const d = new Date(ts); return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`; };
+    const rrows = results.map((r) => {
+      const t = TYPES[r.code]; if (!t) return "";
+      return `<button class="hrow" data-a="${esc(r.a)}">${charImg(t, 44)}<span class="hmeta"><b>${esc(t.name)}</b><i>${fmt(r.ts)}</i></span><span class="tarrow">›</span></button>`;
+    }).join("");
+    const crows = compats.map((c) => {
+      const a = TYPES[c.me], b = TYPES[c.other]; if (!a || !b) return "";
+      return `<div class="hrow flat"><span class="hrate" style="color:${esc(a.color)}">${esc(c.rating)}</span><span class="hmeta"><b>${esc(c.nick || "友達")}(${esc(b.name)}) × あなた(${esc(a.name)})</b><i>${fmt(c.ts)}</i></span></div>`;
+    }).join("");
+    box.innerHTML = `
+      <h3 class="histh">診断のきろく</h3>
+      ${rrows || '<p class="hist-empty">まだ診断のきろくがありません。</p>'}
+      <h3 class="histh">相性チェックのきろく</h3>
+      ${crows || '<p class="hist-empty">まだ相性チェックのきろくがありません。</p>'}
+      <div class="actions">
+        <button class="btn ghost" id="histclear">きろくを全部削除する</button>
+      </div>
+      <p class="pl-hint">きろくはあなたのGoogleアカウントにひも付けて保存され、本人だけが見られます。</p>`;
+    document.querySelectorAll(".hrow[data-a]").forEach((el) =>
+      el.addEventListener("click", () => {
+        answers = [...el.dataset.a].map(Number);
+        inviter = null;
+        myResult = judge(answers, QUESTIONS);
+        showResult({ skipSave: true });
+      })
+    );
+    $("#histclear").addEventListener("click", async () => {
+      if (!confirm("診断と相性のきろくをすべて削除します。よろしいですか？")) return;
+      await FB.D.remove(FB.D.ref(FB.db, `ototype/users/${FB.user.uid}`));
+      toast("きろくを削除しました");
+      renderHistory();
+    });
+  } catch (e) {
+    box.innerHTML = `<p class="hist-empty">きろくを読み込めませんでした。時間をおいて再度お試しください。</p>`;
+  }
 }
 
 // PC(広い画面)専用の両サイド装飾: キャラ6体+音符。表示制御はCSS(1100px未満とクイズ中は非表示)
@@ -90,6 +221,7 @@ function route() {
   const h = location.hash || "#/";
   const detailCode = h.match(/^#\/t\/([FR][LS][DE][TM])$/)?.[1];
   const id = h.startsWith("#/q") ? "quiz" : h.startsWith("#/r") ? "result" : h.startsWith("#/c") ? "compat"
+    : h.startsWith("#/log") ? "history"
     : (detailCode && TYPES[detailCode]) ? "typedetail" : h.startsWith("#/t") ? "types" : "lp";
   // 状態を持たない画面への直リンクはLPへ（相性リンクはクエリで再現されるので安全）
   if ((id === "result" || id === "compat") && !myResult) { location.hash = "#/"; return; }
@@ -99,6 +231,7 @@ function route() {
   if (id === "quiz" && !$("#qlist").childElementCount) renderQuiz();
   if (id === "types") renderTypesGrid();
   if (id === "typedetail") renderTypeDetail(detailCode);
+  if (id === "history") renderHistory();
   scrollTopHard();
 }
 
@@ -177,9 +310,13 @@ function nearCode(r) { // 最も僅差の軸を反転した「寄り」タイプ
 
 function applyTypeColor(color) { document.documentElement.style.setProperty("--type", color); }
 
-function showResult() {
+function showResult(opts = {}) {
   const t = typeOf(myResult.code);
   applyTypeColor(t.color);
+  if (!opts.skipSave && FB.user) {
+    saveRecord("results", { ts: Date.now(), code: myResult.code, a: answers.join("") })
+      .then((ok) => { if (ok) toast("きろくに保存しました"); });
+  }
   $("#rchar").innerHTML = charImg(t, 132);
   $("#rcode").textContent = [...myResult.code].join(" ");
   $("#rname").textContent = t.name;
@@ -236,6 +373,10 @@ $("#rdetail").addEventListener("click", () => { if (myResult) location.hash = "#
 
 // ---------- types zukan（キャラグリッド） ----------
 $("#gotypes").addEventListener("click", () => { location.hash = "#/t"; });
+$("#authbtn").addEventListener("click", () => { FB.user ? logout() : login(); });
+$("#histbtn").addEventListener("click", () => { location.hash = "#/log"; });
+$("#histback").addEventListener("click", () => { location.hash = "#/"; });
+$("#rlogin").addEventListener("click", login);
 $("#tstart").addEventListener("click", startQuiz);
 $("#tdstart").addEventListener("click", startQuiz);
 $("#tback").addEventListener("click", () => { location.hash = "#/"; });
@@ -401,6 +542,10 @@ function showCompat() {
       <div class="c" style="color:${esc(tMe.color)}">${[...me.code].join(" ")}</div>
       <div class="n">${esc(tMe.name)}</div>
     </div>`;
+  if (FB.user) {
+    saveRecord("compats", { ts: Date.now(), nick: inviter.nick || "", me: me.code, other: other.code, rating: base.rating })
+      .then((ok) => { if (ok) toast("きろくに保存しました"); });
+  }
   $("#crating").textContent = base.rating;
   $("#clive").textContent = live;
   $("#ctext").textContent = `${base.summary}。${live}なら、2人とも間違いなく楽しめるはず。`;

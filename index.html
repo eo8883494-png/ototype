@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=21">
+<link rel="stylesheet" href="style.css?v=22">
 <!-- Google Analytics (GA4) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-V0BNHBZ9CW"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-V0BNHBZ9CW');</script>
@@ -33,7 +33,9 @@
 <section class="screen active" id="screen-lp">
   <div class="lp">
     <div class="wrap">
-      <header class="site"><span class="logo">オトタイプ<span class="dot">♪</span></span></header>
+      <header class="site"><span class="logo">オトタイプ<span class="dot">♪</span></span>
+        <span class="autharea"><button class="alink" id="histbtn" style="display:none">きろく</button><button class="alink" id="authbtn">ログイン</button></span>
+      </header>
       <div class="hero">
         <div class="vinyl-wrap">
           <span class="fnote n1">♪</span><span class="fnote n2">♫</span><span class="fnote n3">♩</span>
@@ -141,8 +143,22 @@
       <button class="btn" id="rdetail">このタイプをもっとくわしく</button>
       <button class="btn" id="rtypes">16タイプ図鑑を見る</button>
       <button class="btn ghost" id="retry">もう一度診断する</button>
+      <p class="sharenote" id="loginnote">ログインすると診断結果を「きろく」に残せます(アカウントはzzZFM共通)。<button class="linklike" id="rlogin">ログインする</button></p>
     </div>
     <footer><p>本診断はエンタメ目的です。アーティスト各位とは無関係です。</p></footer>
+  </div>
+</section>
+
+<!-- ===== History(きろく) ===== -->
+<section class="screen" id="screen-history">
+  <div class="wrap">
+    <header class="site"><span class="logo">オトタイプ<span class="dot">♪</span></span></header>
+    <h2 class="pagetitle">きろく</h2>
+    <div id="histbody"></div>
+    <div class="actions">
+      <button class="btn" id="histback">トップにもどる</button>
+    </div>
+    <footer><p>本診断はエンタメ目的です。アーティスト各位とは無関係です。ログインは任意で、きろくはあなたのGoogleアカウントにひも付けて保存されます(いつでも全削除できます)。</p></footer>
   </div>
 </section>
 
@@ -173,6 +189,6 @@
 </section>
 
 <div class="toast" id="toast"></div>
-<script type="module" src="app.js?v=21"></script>
+<script type="module" src="app.js?v=22"></script>
 </body>
 </html>
