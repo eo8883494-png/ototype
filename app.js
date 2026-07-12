@@ -1,19 +1,19 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "14";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=14";
-import { pickWeekly } from "./playlist.mjs?v=14";
+const ASSET_V = "15";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=15";
+import { pickWeekly } from "./playlist.mjs?v=15";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
-const FULLART = new Set(["FLDT", "FLDM", "FLET", "FLEM", "FSDT", "FSDM", "FSET", "FSEM", "RLDT", "RLDM", "RLEM", "RSDT", "RSDM", "RSET", "RSEM"]);
+const FULLART = new Set(["FLDT", "FLDM", "FLET", "FLEM", "FSDT", "FSDM", "FSET", "FSEM", "RLDT", "RLDM", "RLET", "RLEM", "RSDT", "RSDM", "RSET", "RSEM"]);
 
 function charSrc(t) { return `assets/chars/${t.id}.webp?v=${ASSET_V}`; }
 function charImg(t, size) {
   // 原画は高さ基準(横幅は縦横比なり=約1.5倍)、切り出し版は正方形
   const attr = FULLART.has(t.id) ? `height="${size}"` : `width="${size}" height="${size}"`;
-  return `<img class="chimg${FULLART.has(t.id) ? " full" : ""}" src="${charSrc(t)}" ${attr} alt="${esc(t.name)}のキャラクター">`;
+  return `<img class="chimg${FULLART.has(t.id) ? " full" : ""}" src="${charSrc(t)}" ${attr} loading="lazy" decoding="async" alt="${esc(t.name)}のキャラクター">`;
 }
 
 // ---------- state ----------
