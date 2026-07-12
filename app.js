@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "19";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=19";
-import { pickWeekly } from "./playlist.mjs?v=19";
+const ASSET_V = "20";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=20";
+import { pickWeekly } from "./playlist.mjs?v=20";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
@@ -147,6 +147,7 @@ $("#finishquiz").addEventListener("click", () => {
   if (answers.some((a) => a < 0)) return;
   myResult = judge(answers, QUESTIONS);
   $("#finishbar").classList.remove("show");
+  track("quiz_complete", { result_type: myResult.code, via_invite: !!inviter });
   if (inviter) { showCompat(); } else { showResult(); }
   scrollTopHard(); // クイズ末尾からの切替時、進行中のスクロールを打ち消して先頭表示
 });
@@ -326,6 +327,7 @@ async function drawCard(w, h) {
 function siteBase() { return location.origin + location.pathname.replace(/index\.html$/, ""); }
 
 $("#savecard").addEventListener("click", async () => {
+  track("share_card", { result_type: myResult.code });
   const cv = await drawCard(1080, 1920);
   cv.toBlob(async (blob) => {
     const file = new File([blob], `ototype-${myResult.code}.png`, { type: "image/png" });
@@ -341,6 +343,7 @@ $("#savecard").addEventListener("click", async () => {
 
 // ---------- compat link ----------
 $("#makelink").addEventListener("click", async () => {
+  track("make_invite_link", { result_type: myResult.code });
   const nick = $("#nick").value.trim().slice(0, NICK_MAX);
   const url = `${siteBase()}index.html?a=${answers.join("")}&v=${LINK_V}${nick ? "&n=" + encodeURIComponent(nick) : ""}`;
   const text = `私は「${typeOf(myResult.code).name}」だった🎧 相性チェックしてみて→ ${url}`;
@@ -404,6 +407,11 @@ async function copy(text) {
     ta.select(); document.execCommand("copy"); ta.remove();
   }
 }
+// GA4カスタムイベント(gtag未ロードでも安全に無視)
+function track(name, params) {
+  try { if (typeof gtag === "function") gtag("event", name, params || {}); } catch (e) { /* no-op */ }
+}
+
 let toastTimer = null;
 function toast(msg) {
   const el = $("#toast"); el.textContent = msg; el.classList.add("show");
