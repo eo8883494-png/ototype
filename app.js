@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "22";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=22";
-import { pickWeekly } from "./playlist.mjs?v=22";
+const ASSET_V = "23";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=23";
+import { pickWeekly } from "./playlist.mjs?v=23";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
@@ -49,6 +49,7 @@ async function boot() {
   }
   renderCharRow();
   renderSideDeco();
+  restoreCharIcon(); // 端末に記憶した推しキャラアイコンを適用
   route();
   initFirebase(); // 記録機能(任意ログイン)。失敗してもサイト本体は動く
 }
@@ -104,6 +105,7 @@ async function logout() { if (FB.auth) { await FB.A.signOut(FB.auth); toast("ロ
 
 function updateAuthUI() {
   const b = $("#authbtn"), k = $("#histbtn"), note = $("#loginnote");
+  document.body.classList.toggle("authed", !!FB.user); // ログイン限定UI(推しアイコン等)のCSSゲート
   if (!b) return;
   if (FB.user) {
     b.textContent = "ログアウト";
@@ -114,6 +116,34 @@ function updateAuthUI() {
     k.style.display = "none";
     if (note) note.style.display = "";
   }
+}
+
+// ---------- 推しキャラアイコン(ログイン者限定) ----------
+// 選んだキャラにファビコン/ホーム画面アイコンを差し替える。選択は端末に記憶し、次回以降も適用。
+const ICON_KEY = "ototype_icon";
+
+function applyCharIcon(code) {
+  if (!/^[FR][LS][DE][TM]$/.test(code)) return;
+  const base = `assets/icons/c/${code}`;
+  document.querySelector('link[rel="icon"][sizes="32x32"]').href = `${base}-32.png`;
+  document.querySelector('link[rel="icon"][sizes="192x192"]').href = `${base}-192.png`;
+  document.querySelector('link[rel="apple-touch-icon"]').href = `${base}-180.png`;
+  document.querySelector('link[rel="manifest"]').href = `assets/icons/m/${code}.webmanifest`;
+}
+
+function setCharIcon(code) {
+  applyCharIcon(code);
+  try { localStorage.setItem(ICON_KEY, code); } catch (e) { /* プライベートモード等 */ }
+  const t = TYPES[code];
+  toast(`${t ? t.name : code}をアイコンに設定しました`);
+  alert(`アイコンを「${t ? t.name : code}」にしました！\n\nこの状態でブラウザの共有メニューから「ホーム画面に追加」すると、このキャラのアイコンで追加されます。\n(すでに追加済みのアイコンは変わらないので、一度削除してから追加し直してください)`);
+}
+
+function restoreCharIcon() {
+  try {
+    const saved = localStorage.getItem(ICON_KEY);
+    if (saved) applyCharIcon(saved);
+  } catch (e) { /* no-op */ }
 }
 
 function userRef(kind) {
@@ -369,6 +399,7 @@ function renderPlaylist(t) {
 
 $("#retry").addEventListener("click", () => { inviter = null; myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
 $("#rtypes").addEventListener("click", () => { location.hash = "#/t"; });
+$("#ricon").addEventListener("click", () => { if (myResult) setCharIcon(myResult.code); });
 $("#rdetail").addEventListener("click", () => { if (myResult) location.hash = "#/t/" + myResult.code; });
 
 // ---------- types zukan（キャラグリッド） ----------
@@ -428,7 +459,9 @@ function renderTypeDetail(code) {
         const b = TYPES[c];
         return `<a class="buddy" href="#/t/${c}">${charImg(b, 64)}<span>${esc(b.name)}</span></a>`;
       }).join("")}</div>
-    </div>`;
+    </div>
+    <button class="btn iconbtn" id="tdicon">このキャラをホーム画面アイコンにする</button>`;
+  $("#tdicon").addEventListener("click", () => setCharIcon(code));
 }
 
 // ---------- share card (Canvas) ----------

@@ -27,6 +27,9 @@ b{font-weight:900}
 .autharea{position:absolute;right:0;top:50%;transform:translateY(-42%);display:flex;gap:12px}
 .alink{background:none;border:none;font-family:inherit;font-weight:800;font-size:12.5px;color:var(--muted);cursor:pointer;padding:4px 2px}
 .linklike{background:none;border:none;font-family:inherit;font-weight:800;font-size:11px;color:var(--pink);cursor:pointer;text-decoration:underline}
+/* 推しキャラアイコン設定ボタン: ログイン中のみ表示 */
+.iconbtn{display:none}
+body.authed .iconbtn{display:block}
 /* きろく画面 */
 .histh{font-size:14px;font-weight:900;margin:18px 0 8px}
 .hist-empty{font-size:13px;color:var(--muted);line-height:1.9;text-align:center;margin:14px 0}

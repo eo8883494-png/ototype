@@ -1,0 +1,22 @@
+{
+ "name": "オトタイプ｜あなたの「聴き方」タイプ診断",
+ "short_name": "オトタイプ",
+ "description": "20問でわかる、あなたの音楽の聴き方16タイプ。",
+ "start_url": "/ototype/",
+ "scope": "/ototype/",
+ "display": "standalone",
+ "background_color": "#FBF7EE",
+ "theme_color": "#FBF7EE",
+ "icons": [
+  {
+   "src": "/ototype/assets/icons/c/RLEM-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/ototype/assets/icons/c/RLEM-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}
