@@ -1,13 +1,13 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "12";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=12";
-import { pickWeekly } from "./playlist.mjs?v=12";
+const ASSET_V = "13";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=13";
+import { pickWeekly } from "./playlist.mjs?v=13";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
-const FULLART = new Set(["FLDT", "FLDM", "FSDT", "FSDM", "RLDT", "RLDM", "RSDT"]);
+const FULLART = new Set(["FLDT", "FLDM", "FSDT", "FSDM", "FSEM", "RLDT", "RLDM", "RLEM", "RSDT", "RSET"]);
 
 function charSrc(t) { return `assets/chars/${t.id}.webp?v=${ASSET_V}`; }
 function charImg(t, size) {
