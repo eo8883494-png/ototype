@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "8";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=8";
-import { pickWeekly } from "./playlist.mjs?v=8";
+const ASSET_V = "9";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=9";
+import { pickWeekly } from "./playlist.mjs?v=9";
 
 function charSrc(t) { return `assets/chars/${t.id}.webp?v=${ASSET_V}`; }
 function charImg(t, size) {
