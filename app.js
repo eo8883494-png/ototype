@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "20";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=20";
-import { pickWeekly } from "./playlist.mjs?v=20";
+const ASSET_V = "21";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=21";
+import { pickWeekly } from "./playlist.mjs?v=21";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
@@ -48,7 +48,20 @@ async function boot() {
     banner.style.display = "block";
   }
   renderCharRow();
+  renderSideDeco();
   route();
+}
+
+// PC(広い画面)専用の両サイド装飾: キャラ6体+音符。表示制御はCSS(1100px未満とクイズ中は非表示)
+function renderSideDeco() {
+  const picks = ["FSDM", "RLDT", "RSEM", "FSET", "RLEM", "RSDT"];
+  const deco = document.createElement("div");
+  deco.id = "sidedeco";
+  deco.setAttribute("aria-hidden", "true");
+  deco.innerHTML =
+    picks.map((c, i) => `<img class="sd${i + 1}" src="${charSrc(TYPES[c])}" alt="">`).join("") +
+    `<span class="nt n1">♪</span><span class="nt n2">♫</span><span class="nt n3">♩</span><span class="nt n4">♪</span>`;
+  document.body.appendChild(deco);
 }
 
 // LPのキャラ行進（マーキー用に2周分並べて -50% ループ）
@@ -82,6 +95,7 @@ function route() {
   if ((id === "result" || id === "compat") && !myResult) { location.hash = "#/"; return; }
   document.querySelectorAll(".screen").forEach((el) => el.classList.remove("active"));
   $("#screen-" + id).classList.add("active");
+  document.body.dataset.screen = id;
   if (id === "quiz" && !$("#qlist").childElementCount) renderQuiz();
   if (id === "types") renderTypesGrid();
   if (id === "typedetail") renderTypeDetail(detailCode);

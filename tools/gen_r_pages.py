@@ -29,8 +29,8 @@ TPL = """<!DOCTYPE html>
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="{base}r/{id}.html">
-<link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/favicon-32.png?v=2">
-<link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/favicon-32.png?v=3">
+<link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
