@@ -188,6 +188,7 @@ b{font-weight:900}
 .playlist ol.pl-recipe li{margin:3px 0}
 
 .actions{display:flex;flex-direction:column;gap:11px;margin-top:18px}
+.sharenote{font-size:11px;color:var(--muted);line-height:1.7;margin:-4px 4px 0;text-align:center}
 .btn{border-radius:999px;padding:14px;font-size:15px;font-weight:800;border:2px solid var(--type);background:#fff;color:var(--ink)}
 .btn.primary{background:linear-gradient(180deg,color-mix(in srgb, var(--type) 70%, #fff),var(--type));border:none;color:#fff;box-shadow:0 5px 16px color-mix(in srgb, var(--type) 40%, transparent)}
 .btn.ghost{border-color:var(--line);color:var(--muted)}
