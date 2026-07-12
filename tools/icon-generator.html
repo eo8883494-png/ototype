@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  *{margin:0;padding:0}
+  body{width:512px;height:512px}
+  svg{display:block}
+</style></head>
+<body>
+<svg id="icon" width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F6C9D4"/>
+      <stop offset="1" stop-color="#E88CA4"/>
+    </linearGradient>
+    <radialGradient id="disc" cx="35%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#565E6E"/>
+      <stop offset="55%" stop-color="#454C59"/>
+      <stop offset="100%" stop-color="#333944"/>
+    </radialGradient>
+    <radialGradient id="label" cx="35%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#F6C1CE"/>
+      <stop offset="100%" stop-color="#E88CA4"/>
+    </radialGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#8A5A3E" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <g filter="url(#soft)">
+    <circle cx="256" cy="256" r="176" fill="url(#disc)"/>
+    <circle cx="256" cy="256" r="176" fill="none" stroke="#333944" stroke-width="4"/>
+    <circle cx="256" cy="256" r="150" fill="none" stroke="#5C6473" stroke-width="2" opacity="0.55"/>
+    <circle cx="256" cy="256" r="126" fill="none" stroke="#5C6473" stroke-width="2" opacity="0.5"/>
+    <circle cx="256" cy="256" r="102" fill="none" stroke="#5C6473" stroke-width="2" opacity="0.45"/>
+
+    <circle cx="256" cy="256" r="78" fill="url(#label)"/>
+    <text x="256" y="245" text-anchor="middle" font-family="'M PLUS Rounded 1c','Hiragino Kaku Gothic ProN','Yu Gothic UI',sans-serif" font-size="56" font-weight="900" fill="#ffffff">オト</text>
+    <text x="256" y="296" text-anchor="middle" font-family="'M PLUS Rounded 1c','Hiragino Kaku Gothic ProN','Yu Gothic UI',sans-serif" font-size="56" font-weight="900" fill="#ffffff">タイプ</text>
+
+    <circle cx="256" cy="256" r="12" fill="#FBF7EE"/>
+  </g>
+</svg>
+</body></html>
