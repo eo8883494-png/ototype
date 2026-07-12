@@ -74,9 +74,13 @@ b{font-weight:900}
 .stage-label{text-align:center;font-size:11.5px;font-weight:800;color:#A28E68;letter-spacing:.12em}
 .charrow{overflow:hidden;margin-top:6px}
 .chartrack{display:flex;gap:10px;width:max-content;animation:marquee 42s linear infinite}
-.chartrack .cslot{flex:none;text-align:center;width:78px}
+.chartrack .cslot{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:78px}
 .chartrack .cname{display:block;font-size:9.5px;font-weight:800;color:#8A7A5C;margin-top:0;white-space:nowrap}
 .chimg{display:inline-block;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(93,120,110,.18))}
+.chimg.full{border-radius:14px;filter:none;box-shadow:0 4px 12px rgba(93,120,110,.18);max-width:100%}
+.ttile .chimg.full{height:auto;width:100%}
+.buddy .chimg.full{height:auto;width:100%}
+.rchar .chimg.full{height:auto;width:min(320px,94%)}
 @keyframes marquee{to{transform:translateX(-50%)}}
 .eq{display:flex;align-items:flex-end;justify-content:center;gap:5px;height:54px;margin-top:8px;padding-bottom:0}
 .eq i{width:12px;border-radius:6px 6px 0 0;animation:eqb 1.1s ease-in-out infinite alternate}
@@ -130,7 +134,7 @@ b{font-weight:900}
 .pagetitle{font-size:24px;font-weight:900;text-align:center;margin-top:10px}
 .pagelead{font-size:13px;color:var(--muted);text-align:center;margin:6px 0 18px}
 .typegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.ttile{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;
+.ttile{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;text-decoration:none;
   border:2.5px solid;border-radius:20px;padding:14px 8px 12px;
   box-shadow:0 4px 12px rgba(93,120,110,.10);transition:transform .1s}
 .ttile:active{transform:scale(.96)}

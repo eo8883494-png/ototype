@@ -1,13 +1,19 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "9";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=9";
-import { pickWeekly } from "./playlist.mjs?v=9";
+const ASSET_V = "10";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=10";
+import { pickWeekly } from "./playlist.mjs?v=10";
+
+// ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
+// 原画が届いたらこのSetに追加するだけで同じ扱いになる。
+const FULLART = new Set(["FLDT", "FLDM", "FSDT", "FSDM", "RLDT", "RLDM", "RSDT"]);
 
 function charSrc(t) { return `assets/chars/${t.id}.webp?v=${ASSET_V}`; }
 function charImg(t, size) {
-  return `<img class="chimg" src="${charSrc(t)}" width="${size}" height="${size}" alt="${esc(t.name)}のキャラクター">`;
+  // 原画は高さ基準(横幅は縦横比なり=約1.5倍)、切り出し版は正方形
+  const attr = FULLART.has(t.id) ? `height="${size}"` : `width="${size}" height="${size}"`;
+  return `<img class="chimg${FULLART.has(t.id) ? " full" : ""}" src="${charSrc(t)}" ${attr} alt="${esc(t.name)}のキャラクター">`;
 }
 
 // ---------- state ----------
@@ -289,8 +295,10 @@ async function drawCard(w, h) {
   x.fillText([...myResult.code].join(" "), cxx, h * 0.14 + 250 * S);
   const img = await loadCharImage(t);
   if (img) {
-    const cw = 430 * S;
-    x.drawImage(img, cxx - cw / 2, h * 0.40, cw, cw);
+    // 原画は横長・切り出し版は正方形。縦横比を保って幅基準で描画(変形・切り抜きなし)
+    const cw = (img.naturalWidth > img.naturalHeight ? 640 : 430) * S;
+    const chh = cw * (img.naturalHeight / img.naturalWidth);
+    x.drawImage(img, cxx - cw / 2, h * 0.40, cw, chh);
   }
   x.font = `700 ${36 * S}px 'M PLUS Rounded 1c',sans-serif`;
   x.fillStyle = "#FFFFFF";
