@@ -1,19 +1,19 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "15";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=15";
-import { pickWeekly } from "./playlist.mjs?v=15";
+const ASSET_V = "16";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=16";
+import { pickWeekly } from "./playlist.mjs?v=16";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
 const FULLART = new Set(["FLDT", "FLDM", "FLET", "FLEM", "FSDT", "FSDM", "FSET", "FSEM", "RLDT", "RLDM", "RLET", "RLEM", "RSDT", "RSDM", "RSET", "RSEM"]);
 
 function charSrc(t) { return `assets/chars/${t.id}.webp?v=${ASSET_V}`; }
-function charImg(t, size) {
-  // 原画は高さ基準(横幅は縦横比なり=約1.5倍)、切り出し版は正方形
+function charImg(t, size, lazy = false) {
+  // 遅延読み込みはLPマーキーのみ(初回ロード軽量化)。他画面は表示時に即ロード
   const attr = FULLART.has(t.id) ? `height="${size}"` : `width="${size}" height="${size}"`;
-  return `<img class="chimg${FULLART.has(t.id) ? " full" : ""}" src="${charSrc(t)}" ${attr} loading="lazy" decoding="async" alt="${esc(t.name)}のキャラクター">`;
+  return `<img class="chimg${FULLART.has(t.id) ? " full" : ""}" src="${charSrc(t)}" ${attr}${lazy ? ' loading="lazy"' : ""} alt="${esc(t.name)}のキャラクター">`;
 }
 
 // ---------- state ----------
@@ -54,7 +54,7 @@ async function boot() {
 // LPのキャラ行進（マーキー用に2周分並べて -50% ループ）
 function renderCharRow() {
   const slots = Object.values(TYPES).map((t) =>
-    `<span class="cslot">${charImg(t, 64)}<span class="cname">${esc(t.name)}</span></span>`
+    `<span class="cslot">${charImg(t, 64, true)}<span class="cname">${esc(t.name)}</span></span>`
   ).join("");
   $("#chartrack").innerHTML = slots + slots;
 }
@@ -295,10 +295,11 @@ async function drawCard(w, h) {
   x.fillText([...myResult.code].join(" "), cxx, h * 0.14 + 250 * S);
   const img = await loadCharImage(t);
   if (img) {
-    // 原画は横長・切り出し版は正方形。縦横比を保って幅基準で描画(変形・切り抜きなし)
-    const cw = (img.naturalWidth > img.naturalHeight ? 640 : 430) * S;
-    const chh = cw * (img.naturalHeight / img.naturalWidth);
-    x.drawImage(img, cxx - cw / 2, h * 0.40, cw, chh);
+    // 固定枠(620x600相当)に全体を収めて描画(変形・切り抜きなし)。全タイプで大きさが揃う
+    const boxW = 620 * S, boxH = 600 * S;
+    const sc = Math.min(boxW / img.naturalWidth, boxH / img.naturalHeight);
+    const dw = img.naturalWidth * sc, dh = img.naturalHeight * sc;
+    x.drawImage(img, cxx - dw / 2, h * 0.40 + (boxH - dh) / 2, dw, dh);
   }
   x.font = `700 ${36 * S}px 'M PLUS Rounded 1c',sans-serif`;
   x.fillStyle = "#FFFFFF";
