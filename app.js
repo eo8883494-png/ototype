@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "17";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=17";
-import { pickWeekly } from "./playlist.mjs?v=17";
+const ASSET_V = "18";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=18";
+import { pickWeekly } from "./playlist.mjs?v=18";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
@@ -373,12 +373,14 @@ function showCompat() {
   $("#vs").innerHTML = `
     <div class="vcard" style="border-color:${esc(tOther.color)}">
       <div class="who">${esc(inviter.nick || "友達")}</div>
+      ${charImg(tOther, 100)}
       <div class="c" style="color:${esc(tOther.color)}">${[...other.code].join(" ")}</div>
       <div class="n">${esc(tOther.name)}</div>
     </div>
     <div class="vsmark">×</div>
     <div class="vcard" style="border-color:${esc(tMe.color)}">
       <div class="who">あなた</div>
+      ${charImg(tMe, 100)}
       <div class="c" style="color:${esc(tMe.color)}">${[...me.code].join(" ")}</div>
       <div class="n">${esc(tMe.name)}</div>
     </div>`;
