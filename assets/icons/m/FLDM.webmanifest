@@ -1,7 +1,7 @@
-{
- "name": "オトタイプ｜あなたの「聴き方」タイプ診断",
- "short_name": "オトタイプ",
- "description": "20問でわかる、あなたの音楽の聴き方16タイプ。",
+﻿{
+ "name": "繧ｪ繝医ち繧､繝暦ｽ懊≠縺ｪ縺溘・縲瑚・縺肴婿縲阪ち繧､繝苓ｨｺ譁ｭ",
+ "short_name": "繧ｪ繝医ち繧､繝・,
+ "description": "20蝠上〒繧上°繧九√≠縺ｪ縺溘・髻ｳ讌ｽ縺ｮ閨ｴ縺肴婿16繧ｿ繧､繝励・,
  "start_url": "/ototype/",
  "scope": "/ototype/",
  "display": "standalone",
@@ -9,12 +9,12 @@
  "theme_color": "#FBF7EE",
  "icons": [
   {
-   "src": "/ototype/assets/icons/c/FLDM-192.png",
+   "src": "/ototype/assets/icons/c/FLDM-192.png?v=2",
    "sizes": "192x192",
    "type": "image/png"
   },
   {
-   "src": "/ototype/assets/icons/c/FLDM-512.png",
+   "src": "/ototype/assets/icons/c/FLDM-512.png?v=2",
    "sizes": "512x512",
    "type": "image/png"
   }

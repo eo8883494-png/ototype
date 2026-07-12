@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "23";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=23";
-import { pickWeekly } from "./playlist.mjs?v=23";
+const ASSET_V = "24";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=24";
+import { pickWeekly } from "./playlist.mjs?v=24";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
@@ -125,10 +125,10 @@ const ICON_KEY = "ototype_icon";
 function applyCharIcon(code) {
   if (!/^[FR][LS][DE][TM]$/.test(code)) return;
   const base = `assets/icons/c/${code}`;
-  document.querySelector('link[rel="icon"][sizes="32x32"]').href = `${base}-32.png`;
-  document.querySelector('link[rel="icon"][sizes="192x192"]').href = `${base}-192.png`;
-  document.querySelector('link[rel="apple-touch-icon"]').href = `${base}-180.png`;
-  document.querySelector('link[rel="manifest"]').href = `assets/icons/m/${code}.webmanifest`;
+  document.querySelector('link[rel="icon"][sizes="32x32"]').href = `${base}-32.png?v=2`;
+  document.querySelector('link[rel="icon"][sizes="192x192"]').href = `${base}-192.png?v=2`;
+  document.querySelector('link[rel="apple-touch-icon"]').href = `${base}-180.png?v=2`;
+  document.querySelector('link[rel="manifest"]').href = `assets/icons/m/${code}.webmanifest?v=2`;
 }
 
 function setCharIcon(code) {
