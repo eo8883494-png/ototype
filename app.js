@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "26";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=26";
-import { pickWeekly } from "./playlist.mjs?v=26";
+const ASSET_V = "27";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=27";
+import { pickWeekly } from "./playlist.mjs?v=27";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
@@ -291,6 +291,9 @@ function route() {
   if (id === "quiz" && answers.length === QUESTIONS.length && answers.every((a) => a >= 0)) $("#finishbar").classList.add("show");
   if (id === "types") renderTypesGrid();
   if (id === "typedetail") renderTypeDetail(detailCode);
+  // 診断済みなら図鑑/タイプ詳細から結果画面へ戻れる導線を出す
+  if (id === "types") $("#tresult").style.display = myResult ? "" : "none";
+  if (id === "typedetail") $("#tdresult").style.display = myResult ? "" : "none";
   if (id === "history") renderHistory();
   scrollTopHard();
 }
@@ -444,6 +447,8 @@ $("#tstart").addEventListener("click", startQuiz);
 $("#tdstart").addEventListener("click", startQuiz);
 $("#tback").addEventListener("click", () => { location.hash = "#/"; });
 $("#tdback").addEventListener("click", () => { location.hash = "#/t"; });
+$("#tresult").addEventListener("click", () => { location.hash = "#/r"; });
+$("#tdresult").addEventListener("click", () => { location.hash = "#/r"; });
 
 let typesRendered = false;
 function renderTypesGrid() {
