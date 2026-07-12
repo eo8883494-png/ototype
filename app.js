@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "25";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=25";
-import { pickWeekly } from "./playlist.mjs?v=25";
+const ASSET_V = "26";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=26";
+import { pickWeekly } from "./playlist.mjs?v=26";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
@@ -271,6 +271,7 @@ function scrollTopHard() {
 
 window.addEventListener("hashchange", route);
 function route() {
+  if (!TYPES) return; // データ読込完了前のhashchangeで例外にしない(boot完了時にrouteが呼ばれる)
   const h = location.hash || "#/";
   const detailCode = h.match(/^#\/t\/([FR][LS][DE][TM])$/)?.[1];
   const id = h.startsWith("#/q") ? "quiz" : h.startsWith("#/r") ? "result" : h.startsWith("#/c") ? "compat"
@@ -278,10 +279,16 @@ function route() {
     : (detailCode && TYPES[detailCode]) ? "typedetail" : h.startsWith("#/t") ? "types" : "lp";
   // 状態を持たない画面への直リンクはLPへ（招待はsessionStorageで同タブのリロードに耐える）
   if ((id === "result" || id === "compat") && !myResult) { location.hash = "#/"; return; }
+  if (id === "compat" && !compatShown) { location.hash = "#/"; return; } // 相性未計算で#/cへ来ても空画面を出さない
   document.querySelectorAll(".screen").forEach((el) => el.classList.remove("active"));
   $("#screen-" + id).classList.add("active");
   document.body.dataset.screen = id;
+  // 画面ごとにテーマ色を復元（図鑑詳細で変えた色が結果画面や戻り先に残らないように）
+  if (id === "result" || id === "compat") applyTypeColor(typeOf(myResult.code).color);
+  else if (id !== "typedetail") applyTypeColor(DEFAULT_TYPE_COLOR);
   if (id === "quiz" && !$("#qlist").childElementCount) renderQuiz();
+  // 結果から「戻る」で設問へ戻ったとき、全問回答済みなら完了ボタンを出し直す
+  if (id === "quiz" && answers.length === QUESTIONS.length && answers.every((a) => a >= 0)) $("#finishbar").classList.add("show");
   if (id === "types") renderTypesGrid();
   if (id === "typedetail") renderTypeDetail(detailCode);
   if (id === "history") renderHistory();
@@ -345,6 +352,7 @@ function updateProgress() {
 
 $("#finishquiz").addEventListener("click", () => {
   if (answers.some((a) => a < 0)) return;
+  if (document.body.dataset.screen !== "quiz") return; // 連打での二重保存・二重計測を防止(1回目で画面が切り替わる)
   myResult = judge(answers, QUESTIONS);
   $("#finishbar").classList.remove("show");
   track("quiz_complete", { result_type: myResult.code, via_invite: !!inviter });
@@ -361,6 +369,7 @@ function nearCode(r) { // 最も僅差の軸を反転した「寄り」タイプ
   return r.code.slice(0, i) + flipped + r.code.slice(i + 1);
 }
 
+const DEFAULT_TYPE_COLOR = "#E88CA4"; // style.css :root --type と同値
 function applyTypeColor(color) { document.documentElement.style.setProperty("--type", color); }
 
 function showResult(opts = {}) {
@@ -610,7 +619,7 @@ function showCompat() {
   location.hash = "#/c";
 }
 
-$("#copyinvite").addEventListener("click", async () => { await copy(compatShown.invite); toast("誘い文句をコピーしました"); });
+$("#copyinvite").addEventListener("click", async () => { if (!compatShown) return; await copy(compatShown.invite); toast("誘い文句をコピーしました"); });
 $("#cretry").addEventListener("click", () => { clearInvite(); myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
 $("#cshowmine").addEventListener("click", () => { clearInvite(); showResult(); });
 
