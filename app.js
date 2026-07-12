@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "24";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=24";
-import { pickWeekly } from "./playlist.mjs?v=24";
+const ASSET_V = "25";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=25";
+import { pickWeekly } from "./playlist.mjs?v=25";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
@@ -27,6 +27,14 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const NICK_MAX = 20;
 const LINK_V = "2"; // 招待リンクの版（v2=7段階回答）
+const INVITE_SS = "ototype_invite"; // 招待情報のタブ内保存キー(リロード対策。URLには残さない)
+
+function clearInvite() {
+  inviter = null;
+  try { sessionStorage.removeItem(INVITE_SS); } catch (e) { /* noop */ }
+  const banner = $("#invite-banner");
+  if (banner) banner.style.display = "none";
+}
 
 // ---------- boot ----------
 async function boot() {
@@ -39,10 +47,25 @@ async function boot() {
   TYPES = t; QUESTIONS = q; COMPAT = c; PLAYLISTS = pls;
 
   // 招待リンク ?a=回答列(0-6)&v=2&n=ニックネーム
+  // 受け取った招待クエリは即URLから消してsessionStorage(タブ内)に移す。URLに残すと、
+  // 招待された人がアドレスバーやアプリの共有機能でこのページを共有したとき
+  // 「招待した人のリンク」がそのまま拡散され、別の人の名前で招待が表示される(2026-07-13修正)。
   const p = new URLSearchParams(location.search);
   const a = p.get("a");
   if (p.get("v") === LINK_V && a && new RegExp(`^[0-6]{${QUESTIONS.length}}$`).test(a)) {
     inviter = { answers: [...a].map(Number), nick: (p.get("n") || "").slice(0, NICK_MAX) };
+    try { sessionStorage.setItem(INVITE_SS, JSON.stringify(inviter)); } catch (e) { /* プライベートモード等 */ }
+    history.replaceState(null, "", location.pathname + location.hash);
+  } else {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(INVITE_SS));
+      if (saved && Array.isArray(saved.answers) && saved.answers.length === QUESTIONS.length
+        && saved.answers.every((n) => Number.isInteger(n) && n >= 0 && n <= 6)) {
+        inviter = { answers: saved.answers, nick: String(saved.nick || "").slice(0, NICK_MAX) };
+      }
+    } catch (e) { /* 保存なし・壊れたデータは無視 */ }
+  }
+  if (inviter) {
     const banner = $("#invite-banner");
     banner.innerHTML = `🎧 <b>${esc(inviter.nick || "友達")}</b>さんから相性チェックの招待が届いています。診断すると2人のライブ相性がわかる！`;
     banner.style.display = "block";
@@ -197,7 +220,7 @@ async function renderHistory() {
     document.querySelectorAll(".hrow[data-a]").forEach((el) =>
       el.addEventListener("click", () => {
         answers = [...el.dataset.a].map(Number);
-        inviter = null;
+        clearInvite();
         myResult = judge(answers, QUESTIONS);
         showResult({ skipSave: true });
       })
@@ -253,7 +276,7 @@ function route() {
   const id = h.startsWith("#/q") ? "quiz" : h.startsWith("#/r") ? "result" : h.startsWith("#/c") ? "compat"
     : h.startsWith("#/log") ? "history"
     : (detailCode && TYPES[detailCode]) ? "typedetail" : h.startsWith("#/t") ? "types" : "lp";
-  // 状態を持たない画面への直リンクはLPへ（相性リンクはクエリで再現されるので安全）
+  // 状態を持たない画面への直リンクはLPへ（招待はsessionStorageで同タブのリロードに耐える）
   if ((id === "result" || id === "compat") && !myResult) { location.hash = "#/"; return; }
   document.querySelectorAll(".screen").forEach((el) => el.classList.remove("active"));
   $("#screen-" + id).classList.add("active");
@@ -397,7 +420,7 @@ function renderPlaylist(t) {
   $("#plbody").innerHTML = playlistHTML(t);
 }
 
-$("#retry").addEventListener("click", () => { inviter = null; myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
+$("#retry").addEventListener("click", () => { clearInvite(); myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
 $("#rtypes").addEventListener("click", () => { location.hash = "#/t"; });
 $("#ricon").addEventListener("click", () => { if (myResult) setCharIcon(myResult.code); });
 $("#rdetail").addEventListener("click", () => { if (myResult) location.hash = "#/t/" + myResult.code; });
@@ -588,8 +611,8 @@ function showCompat() {
 }
 
 $("#copyinvite").addEventListener("click", async () => { await copy(compatShown.invite); toast("誘い文句をコピーしました"); });
-$("#cretry").addEventListener("click", () => { inviter = null; myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
-$("#cshowmine").addEventListener("click", () => { inviter = null; showResult(); });
+$("#cretry").addEventListener("click", () => { clearInvite(); myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
+$("#cshowmine").addEventListener("click", () => { clearInvite(); showResult(); });
 
 // ---------- utils ----------
 async function copy(text) {
