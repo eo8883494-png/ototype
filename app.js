@@ -1,9 +1,9 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "16";
-import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=16";
-import { pickWeekly } from "./playlist.mjs?v=16";
+const ASSET_V = "17";
+import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=17";
+import { pickWeekly } from "./playlist.mjs?v=17";
 
 // ユーザー原画をそのまま表示するタイプ(3:2の一枚絵・切り抜きなし)。残りはシート切り出し版(正方形)。
 // 原画が届いたらこのSetに追加するだけで同じ扱いになる。
@@ -60,6 +60,18 @@ function renderCharRow() {
 }
 
 // ---------- router ----------
+// iOS Safariでは「最終問の回答時のスムーズスクロール」や履歴のスクロール復元が
+// 画面切替後も効いてしまい、結果画面が下スクロール位置で表示されることがある。
+// → 復元を無効化し、切替時は複数タイミングで先頭へ戻す(進行中のアニメーションを打ち消す)
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+function scrollTopHard() {
+  const s = () => window.scrollTo(0, 0);
+  s();
+  requestAnimationFrame(s);
+  setTimeout(s, 80);
+  setTimeout(s, 300);
+}
+
 window.addEventListener("hashchange", route);
 function route() {
   const h = location.hash || "#/";
@@ -73,7 +85,7 @@ function route() {
   if (id === "quiz" && !$("#qlist").childElementCount) renderQuiz();
   if (id === "types") renderTypesGrid();
   if (id === "typedetail") renderTypeDetail(detailCode);
-  window.scrollTo(0, 0);
+  scrollTopHard();
 }
 
 // ---------- quiz（7段階同意スケール・1ページスクロール式） ----------
@@ -136,6 +148,7 @@ $("#finishquiz").addEventListener("click", () => {
   myResult = judge(answers, QUESTIONS);
   $("#finishbar").classList.remove("show");
   if (inviter) { showCompat(); } else { showResult(); }
+  scrollTopHard(); // クイズ末尾からの切替時、進行中のスクロールを打ち消して先頭表示
 });
 
 // ---------- result ----------
