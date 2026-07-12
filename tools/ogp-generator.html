@@ -24,7 +24,16 @@ const canvases={};
 
 async function ready(){ try{ await document.fonts.load("900 80px 'M PLUS Rounded 1c'"); }catch(e){} }
 
-function draw(t){
+function loadChar(t){
+  return new Promise((res)=>{
+    const img=new Image();
+    img.onload=()=>res(img);
+    img.onerror=()=>res(null); // キャラ無しでも生成は続行
+    img.src="../assets/chars/"+t.id+".webp";
+  });
+}
+
+async function draw(t){
   const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
   const x=cv.getContext("2d");
   const g=x.createLinearGradient(0,0,W,H);
@@ -32,25 +41,35 @@ function draw(t){
   x.fillStyle=g; x.fillRect(0,0,W,H);
   x.fillStyle="rgba(255,255,255,.13)";
   for(let i=0;i<20;i++){ x.beginPath(); x.arc((i*173)%W,(i*97)%H,2.4,0,7); x.fill(); }
+  // 右側にキャラ(固定枠にアスペクト維持で全体を収める・切り抜きなし)
+  const img=await loadChar(t);
+  if(img){
+    const bw=430,bh=520,bcx=935,bcy=320;
+    const sc=Math.min(bw/img.naturalWidth,bh/img.naturalHeight);
+    const dw=img.naturalWidth*sc,dh=img.naturalHeight*sc;
+    x.drawImage(img,bcx-dw/2,bcy-dh/2,dw,dh);
+  }
+  // 左側にテキスト
+  const cx=400;
   x.textAlign="center";
   x.fillStyle="rgba(255,255,255,.85)";
   x.font="800 30px 'M PLUS Rounded 1c',sans-serif";
-  x.fillText("私は…", W/2, 150);
+  x.fillText("私は…", cx, 160);
   x.fillStyle="#FFFFFF";
-  x.font="900 84px 'M PLUS Rounded 1c',sans-serif";
-  x.fillText(t.name, W/2, 260);
-  x.font="700 36px 'M PLUS Rounded 1c',sans-serif";
+  x.font="900 76px 'M PLUS Rounded 1c',sans-serif";
+  x.fillText(t.name, cx, 265);
+  x.font="700 33px 'M PLUS Rounded 1c',sans-serif";
   x.fillStyle="rgba(255,255,255,.92)";
-  x.fillText(t.catch, W/2, 330);
-  x.font="800 28px 'M PLUS Rounded 1c',sans-serif";
+  x.fillText(t.catch, cx, 335);
+  x.font="800 27px 'M PLUS Rounded 1c',sans-serif";
   x.fillStyle="rgba(255,255,255,.8)";
-  x.fillText([...t.id].join(" "), W/2, 390);
-  x.font="800 34px 'M PLUS Rounded 1c',sans-serif";
+  x.fillText([...t.id].join(" "), cx, 395);
+  x.font="800 33px 'M PLUS Rounded 1c',sans-serif";
   x.fillStyle="#FFFFFF";
-  x.fillText("#オトタイプ 聴き方タイプ診断", W/2, 500);
+  x.fillText("#オトタイプ 聴き方タイプ診断", cx, 500);
   x.font="700 24px 'M PLUS Rounded 1c',sans-serif";
   x.fillStyle="rgba(255,255,255,.7)";
-  x.fillText("あなたの聴き方も、20問・1分で。", W/2, 550);
+  x.fillText("あなたの聴き方も、20問・1分で。", cx, 548);
   return cv;
 }
 
@@ -60,7 +79,7 @@ link.href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;8
 document.head.appendChild(link);
 await new Promise(r=>setTimeout(r,600)); await ready();
 
-for(const t of Object.values(TYPES)){ const cv=draw(t); canvases[t.id]=cv; grid.appendChild(cv); }
+for(const t of Object.values(TYPES)){ const cv=await draw(t); canvases[t.id]=cv; grid.appendChild(cv); }
 
 document.getElementById("dl").addEventListener("click", async ()=>{
   for(const [id,cv] of Object.entries(canvases)){
