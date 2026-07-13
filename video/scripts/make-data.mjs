@@ -30,7 +30,8 @@ for (const [code, t] of Object.entries(types)) {
     image: `types/${code}.webp`,
     color: t.color,
     axis: sampleAxis(code),
-    hashtags: (t.keywords ?? []).slice(0, 3),
+    // 基本4+タイプ由来2=6個(2026-07-13「ハッシュタグをしっかり」指示)
+    hashtags: [...new Set(['オトタイプ', '音楽診断', '16タイプ診断', '音楽好きな人と繋がりたい', ...(t.keywords ?? []).slice(0, 2)])],
   };
   writeFileSync(path.join(ROOT, 'data', `${code.toLowerCase()}.json`), JSON.stringify(data, null, 2), 'utf-8');
   n++;
