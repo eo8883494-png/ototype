@@ -1,5 +1,5 @@
 seq,template,json,primary,status,posted_at
-1,A,data/rldm.json,RLDM,pending,
+1,A,data/rldm.json,RLDM,posted,2026-07-13
 2,B,data/b/rsdm.json,RSDM,pending,
 3,C,data/c/rsdt.json,RSDT,pending,
 4,A,data/rldt.json,RLDT,pending,
