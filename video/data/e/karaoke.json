@@ -1,0 +1,33 @@
+{
+  "template": "E",
+  "theme": "カラオケで本気を出すタイプ",
+  "ranks": [
+    {
+      "place": 1,
+      "type": "カラオケ主役型",
+      "code": "FLET",
+      "image": "types/FLET.webp",
+      "color": "#FF9D5C"
+    },
+    {
+      "place": 2,
+      "type": "フェス大合唱型",
+      "code": "FSDT",
+      "image": "types/FSDT.webp",
+      "color": "#FF4D6D"
+    },
+    {
+      "place": 3,
+      "type": "現場ノリ最優先型",
+      "code": "FSET",
+      "image": "types/FSET.webp",
+      "color": "#FF7E99"
+    }
+  ],
+  "color": "#FF9D5C",
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "ランキング"
+  ]
+}

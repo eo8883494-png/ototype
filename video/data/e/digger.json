@@ -1,0 +1,33 @@
+{
+  "template": "E",
+  "theme": "新曲を見つけるのが早いタイプ",
+  "ranks": [
+    {
+      "place": 1,
+      "type": "洋楽アンテナ型",
+      "code": "RSEM",
+      "image": "types/RSEM.webp",
+      "color": "#23A8D9"
+    },
+    {
+      "place": 2,
+      "type": "フェス回遊型",
+      "code": "FSEM",
+      "image": "types/FSEM.webp",
+      "color": "#C73A63"
+    },
+    {
+      "place": 3,
+      "type": "弾き語り布教型",
+      "code": "FLDM",
+      "image": "types/FLDM.webp",
+      "color": "#E85D1F"
+    }
+  ],
+  "color": "#23A8D9",
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "ランキング"
+  ]
+}

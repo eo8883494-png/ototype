@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "チル・BGM型",
+  "code": "RSET",
+  "image": "types/RSET.webp",
+  "color": "#5FA8E0",
+  "playlistTitle": "今日がちょっと上質になる音",
+  "songs": [
+    {
+      "t": "しわあわせ",
+      "a": "Vaundy"
+    },
+    {
+      "t": "Stand by me, Stand by you.",
+      "a": "平井大"
+    },
+    {
+      "t": "summertime",
+      "a": "cinnamons × evening cinema"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "BGM",
+    "プレイリスト"
+  ]
+}

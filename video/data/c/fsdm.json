@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "ライブハウス魂型",
+  "code": "FSDM",
+  "image": "types/FSDM.webp",
+  "color": "#D92E3C",
+  "playlistTitle": "爆音浄化セット",
+  "songs": [
+    {
+      "t": "リライト",
+      "a": "ASIAN KUNG-FU GENERATION"
+    },
+    {
+      "t": "真赤",
+      "a": "My Hair is Bad"
+    },
+    {
+      "t": "The Rumbling",
+      "a": "SiM"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "爆音",
+    "プレイリスト"
+  ]
+}

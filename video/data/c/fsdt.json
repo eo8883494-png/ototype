@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "フェス大合唱型",
+  "code": "FSDT",
+  "image": "types/FSDT.webp",
+  "color": "#FF4D6D",
+  "playlistTitle": "夏フェス脳内リハーサル",
+  "songs": [
+    {
+      "t": "シルエット",
+      "a": "KANA-BOON"
+    },
+    {
+      "t": "ないものねだり",
+      "a": "KANA-BOON"
+    },
+    {
+      "t": "オドループ",
+      "a": "フレデリック"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "合唱",
+    "プレイリスト"
+  ]
+}

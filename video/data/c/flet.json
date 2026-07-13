@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "カラオケ主役型",
+  "code": "FLET",
+  "image": "types/FLET.webp",
+  "color": "#FF9D5C",
+  "playlistTitle": "今夜の十八番リスト",
+  "songs": [
+    {
+      "t": "香水",
+      "a": "瑛人"
+    },
+    {
+      "t": "Habit",
+      "a": "SEKAI NO OWARI"
+    },
+    {
+      "t": "シャルル",
+      "a": "バルーン"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "カラオケ",
+    "プレイリスト"
+  ]
+}

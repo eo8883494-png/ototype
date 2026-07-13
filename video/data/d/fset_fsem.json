@@ -1,0 +1,22 @@
+{
+  "template": "D",
+  "left": {
+    "type": "現場ノリ最優先型",
+    "code": "FSET",
+    "image": "types/FSET.webp",
+    "color": "#FF7E99"
+  },
+  "right": {
+    "type": "フェス回遊型",
+    "code": "FSEM",
+    "image": "types/FSEM.webp",
+    "color": "#C73A63"
+  },
+  "rating": "◎",
+  "summary": "音楽の楽しみ方の温度も含めてほぼ同じ。王道を愛する人と開拓する人の違いが良いスパイス",
+  "hashtags": [
+    "オトタイプ",
+    "相性診断",
+    "音楽好きと繋がりたい"
+  ]
+}

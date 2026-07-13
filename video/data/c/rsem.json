@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "洋楽アンテナ型",
+  "code": "RSEM",
+  "image": "types/RSEM.webp",
+  "color": "#23A8D9",
+  "playlistTitle": "国境なし・今週の収穫",
+  "songs": [
+    {
+      "t": "Levitating",
+      "a": "Dua Lipa"
+    },
+    {
+      "t": "Snooze",
+      "a": "SZA"
+    },
+    {
+      "t": "Espresso",
+      "a": "Sabrina Carpenter"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "洋楽",
+    "プレイリスト"
+  ]
+}

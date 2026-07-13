@@ -1,0 +1,33 @@
+{
+  "template": "E",
+  "theme": "深夜に歌詞で泣いてるタイプ",
+  "ranks": [
+    {
+      "place": 1,
+      "type": "深夜ポエトリー型",
+      "code": "RLEM",
+      "image": "types/RLEM.webp",
+      "color": "#7A55D6"
+    },
+    {
+      "place": 2,
+      "type": "歌詞刺さり型",
+      "code": "RLDT",
+      "image": "types/RLDT.webp",
+      "color": "#C24FD8"
+    },
+    {
+      "place": 3,
+      "type": "世界観考察型",
+      "code": "RLDM",
+      "image": "types/RLDM.webp",
+      "color": "#9438C9"
+    }
+  ],
+  "color": "#7A55D6",
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "ランキング"
+  ]
+}

@@ -24,11 +24,14 @@ const RETRIES = 3;
 const WAIT_MS = 45_000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const renderOne = (abs, out) =>
+// JSONの"template"からコンポジションIDを解決(省略時はA=診断結果)
+const COMPOSITIONS = {A: 'OtotypeResult', B: 'OtotypeAruaru', C: 'OtotypePlaylist', D: 'OtotypeCompare', E: 'OtotypeRanking'};
+
+const renderOne = (abs, out, compositionId) =>
   spawnSync(
     'npx',
     [
-      'remotion', 'render', 'OtotypeResult', out,
+      'remotion', 'render', compositionId, out,
       `--props=${abs}`,
       '--concurrency=1',
       '--x264-preset=ultrafast',
@@ -39,14 +42,18 @@ const renderOne = (abs, out) =>
 const failed = [];
 for (const rel of targets) {
   const abs = path.resolve(ROOT, rel);
-  JSON.parse(readFileSync(abs, 'utf-8')); // 早期バリデーション(壊れたJSONを検出)
-  // 出力名はJSONファイル名から(fsdm.json→FSDM.mp4、personal_*.jsonはそのまま=タイプ動画を上書きしない)
+  const data = JSON.parse(readFileSync(abs, 'utf-8')); // 早期バリデーション(壊れたJSONを検出)
+  const tpl = data.template ?? 'A';
+  const compositionId = COMPOSITIONS[tpl];
+  if (!compositionId) { console.error(`不明なtemplate: ${tpl}`); process.exit(1); }
+  // 出力名: テンプレ接頭辞+ファイル名(A/fsdm.json→FSDM.mp4、b/fsdm.json→B_FSDM.mp4、personal_*はそのまま)
   const base = path.basename(abs, '.json');
-  const out = path.join('out', `${base.startsWith('personal') ? base : base.toUpperCase()}.mp4`);
-  console.log(`\n=== render ${rel} -> ${out} ===`);
+  const name = base.startsWith('personal') ? base : tpl === 'A' ? base.toUpperCase() : `${tpl}_${base.toUpperCase()}`;
+  const out = path.join('out', `${name}.mp4`);
+  console.log(`\n=== render [${tpl}] ${rel} -> ${out} ===`);
   let ok = false;
   for (let attempt = 1; attempt <= RETRIES; attempt++) {
-    const r = renderOne(abs, out);
+    const r = renderOne(abs, out, compositionId);
     if (r.status === 0) {
       ok = true;
       break;

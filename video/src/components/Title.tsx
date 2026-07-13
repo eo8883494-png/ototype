@@ -15,6 +15,8 @@ type Props = {
   delay?: number;
   letterSpacing?: number;
   shadow?: boolean;
+  /** 折り返し禁止(長いタイトルはサイズ側で調整する) */
+  nowrap?: boolean;
 };
 
 export const Title: React.FC<Props> = ({
@@ -26,6 +28,7 @@ export const Title: React.FC<Props> = ({
   delay = 0,
   letterSpacing = 0,
   shadow = true,
+  nowrap = false,
 }) => {
   const frame = useCurrentFrame();
   const pop = usePop(delay);
@@ -41,6 +44,7 @@ export const Title: React.FC<Props> = ({
     letterSpacing,
     textAlign: 'center',
     lineHeight: 1.25,
+    whiteSpace: nowrap ? 'nowrap' : undefined,
     textShadow: shadow ? '0 4px 18px rgba(0,0,0,0.22)' : undefined,
     ...(mode === 'pop'
       ? {transform: `scale(${pop})`, opacity: Math.min(1, pop * 1.4)}

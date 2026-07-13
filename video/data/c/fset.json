@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "現場ノリ最優先型",
+  "code": "FSET",
+  "image": "types/FSET.webp",
+  "color": "#FF7E99",
+  "playlistTitle": "とりあえず踊れるやつ",
+  "songs": [
+    {
+      "t": "かつて天才だった俺たちへ",
+      "a": "Creepy Nuts"
+    },
+    {
+      "t": "ダンスホール",
+      "a": "Mrs. GREEN APPLE"
+    },
+    {
+      "t": "ポリリズム",
+      "a": "Perfume"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "ノリ",
+    "プレイリスト"
+  ]
+}

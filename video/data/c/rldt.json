@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "歌詞刺さり型",
+  "code": "RLDT",
+  "image": "types/RLDT.webp",
+  "color": "#C24FD8",
+  "playlistTitle": "一行に殴られたい夜用",
+  "songs": [
+    {
+      "t": "アイネクライネ",
+      "a": "米津玄師"
+    },
+    {
+      "t": "糸",
+      "a": "中島みゆき"
+    },
+    {
+      "t": "点描の唄(feat.井上苑子)",
+      "a": "Mrs. GREEN APPLE"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "歌詞",
+    "プレイリスト"
+  ]
+}

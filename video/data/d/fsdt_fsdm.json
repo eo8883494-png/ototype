@@ -1,0 +1,22 @@
+{
+  "template": "D",
+  "left": {
+    "type": "フェス大合唱型",
+    "code": "FSDT",
+    "image": "types/FSDT.webp",
+    "color": "#FF4D6D"
+  },
+  "right": {
+    "type": "ライブハウス魂型",
+    "code": "FSDM",
+    "image": "types/FSDM.webp",
+    "color": "#D92E3C"
+  },
+  "rating": "◎",
+  "summary": "音楽の楽しみ方の温度も含めてほぼ同じ。王道を愛する人と開拓する人の違いが良いスパイス",
+  "hashtags": [
+    "オトタイプ",
+    "相性診断",
+    "音楽好きと繋がりたい"
+  ]
+}

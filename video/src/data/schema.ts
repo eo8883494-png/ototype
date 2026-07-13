@@ -43,6 +43,52 @@ export type VideoData = {
 
 export const DEFAULT_SITE_URL = 'https://eo8883494-png.github.io/ototype/';
 
+// ---- テンプレートB〜E(2026-07-13追加)。JSONの"template"でコンポジションを選ぶ ----
+
+/** B: タイプあるある */
+export type AruaruData = {
+  template: 'B';
+  type: string;
+  code: string;
+  image: string;
+  color: string;
+  aruaru: string[];
+  hashtags: string[];
+};
+
+/** C: おすすめプレイリスト(選曲はサイトの週替わりロジックと同源) */
+export type PlaylistData = {
+  template: 'C';
+  type: string;
+  code: string;
+  image: string;
+  color: string;
+  playlistTitle: string;
+  songs: {t: string; a: string}[];
+  hashtags: string[];
+};
+
+/** D: 友達と比較(相性はcompat.jsonと同源) */
+export type CompareSide = {type: string; code: string; image: string; color: string};
+export type CompareData = {
+  template: 'D';
+  left: CompareSide;
+  right: CompareSide;
+  rating: string;
+  summary: string;
+  hashtags: string[];
+};
+
+/** E: ランキング(エンタメ・独断と明記して使う) */
+export type RankItem = {place: number; type: string; code: string; image: string; color: string};
+export type RankingData = {
+  template: 'E';
+  theme: string;
+  ranks: RankItem[];
+  color?: string;
+  hashtags: string[];
+};
+
 /** 軸キー→日本語ラベル(表示順もこの順) */
 export const AXIS_LABELS: {key: keyof AxisScores; label: string}[] = [
   {key: 'place', label: '場所感'},

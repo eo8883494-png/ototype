@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "イヤホン没入型",
+  "code": "RSDT",
+  "image": "types/RSDT.webp",
+  "color": "#4062E8",
+  "playlistTitle": "高解像度で潜る用",
+  "songs": [
+    {
+      "t": "U",
+      "a": "millennium parade × Belle"
+    },
+    {
+      "t": "One Last Kiss",
+      "a": "宇多田ヒカル"
+    },
+    {
+      "t": "traveling",
+      "a": "宇多田ヒカル"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "没入",
+    "プレイリスト"
+  ]
+}

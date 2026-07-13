@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "フェス回遊型",
+  "code": "FSEM",
+  "image": "types/FSEM.webp",
+  "color": "#C73A63",
+  "playlistTitle": "次に来るやつ先取りリスト",
+  "songs": [
+    {
+      "t": "Summer Soul",
+      "a": "cero"
+    },
+    {
+      "t": "水星",
+      "a": "tofubeats"
+    },
+    {
+      "t": "CLIMAX NIGHT",
+      "a": "Yogee New Waves"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "回遊",
+    "プレイリスト"
+  ]
+}

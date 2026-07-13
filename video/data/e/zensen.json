@@ -1,0 +1,33 @@
+{
+  "template": "E",
+  "theme": "ライブで最前列にいるタイプ",
+  "ranks": [
+    {
+      "place": 1,
+      "type": "ライブハウス魂型",
+      "code": "FSDM",
+      "image": "types/FSDM.webp",
+      "color": "#D92E3C"
+    },
+    {
+      "place": 2,
+      "type": "フェス大合唱型",
+      "code": "FSDT",
+      "image": "types/FSDT.webp",
+      "color": "#FF4D6D"
+    },
+    {
+      "place": 3,
+      "type": "現場ノリ最優先型",
+      "code": "FSET",
+      "image": "types/FSET.webp",
+      "color": "#FF7E99"
+    }
+  ],
+  "color": "#D92E3C",
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "ランキング"
+  ]
+}

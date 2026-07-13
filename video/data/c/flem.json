@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "名曲布教型",
+  "code": "FLEM",
+  "image": "types/FLEM.webp",
+  "color": "#D9822B",
+  "playlistTitle": "こっそり配る隠れ名曲集",
+  "songs": [
+    {
+      "t": "ただ君に晴れ",
+      "a": "ヨルシカ"
+    },
+    {
+      "t": "猫",
+      "a": "DISH//"
+    },
+    {
+      "t": "勿忘",
+      "a": "Awesome City Club"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "布教",
+    "プレイリスト"
+  ]
+}

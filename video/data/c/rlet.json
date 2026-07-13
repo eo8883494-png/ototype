@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "ドラマ主題歌型",
+  "code": "RLET",
+  "image": "types/RLET.webp",
+  "color": "#D77BE6",
+  "playlistTitle": "物語と聴く主題歌集",
+  "songs": [
+    {
+      "t": "なんでもないよ、",
+      "a": "マカロニえんぴつ"
+    },
+    {
+      "t": "ハルカ",
+      "a": "YOASOBI"
+    },
+    {
+      "t": "Soranji",
+      "a": "Mrs. GREEN APPLE"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "主題歌",
+    "プレイリスト"
+  ]
+}

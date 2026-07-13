@@ -1,0 +1,22 @@
+{
+  "template": "D",
+  "left": {
+    "type": "ドラマ主題歌型",
+    "code": "RLET",
+    "image": "types/RLET.webp",
+    "color": "#D77BE6"
+  },
+  "right": {
+    "type": "深夜ポエトリー型",
+    "code": "RLEM",
+    "image": "types/RLEM.webp",
+    "color": "#7A55D6"
+  },
+  "rating": "◎",
+  "summary": "音楽の楽しみ方の温度も含めてほぼ同じ。王道を愛する人と開拓する人の違いが良いスパイス",
+  "hashtags": [
+    "オトタイプ",
+    "相性診断",
+    "音楽好きと繋がりたい"
+  ]
+}

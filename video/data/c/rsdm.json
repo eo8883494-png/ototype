@@ -1,0 +1,28 @@
+{
+  "template": "C",
+  "type": "サブスク潜水型",
+  "code": "RSDM",
+  "image": "types/RSDM.webp",
+  "color": "#2E3FB0",
+  "playlistTitle": "再生数3桁の海へ",
+  "songs": [
+    {
+      "t": "KING",
+      "a": "Kanaria"
+    },
+    {
+      "t": "トウキョウ・シャンディ・ランデヴ",
+      "a": "MAISONdes"
+    },
+    {
+      "t": "強風オールバック",
+      "a": "ゆこぴ"
+    }
+  ],
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "発掘",
+    "プレイリスト"
+  ]
+}

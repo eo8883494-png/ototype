@@ -1,0 +1,22 @@
+{
+  "template": "D",
+  "left": {
+    "type": "カラオケ主役型",
+    "code": "FLET",
+    "image": "types/FLET.webp",
+    "color": "#FF9D5C"
+  },
+  "right": {
+    "type": "名曲布教型",
+    "code": "FLEM",
+    "image": "types/FLEM.webp",
+    "color": "#D9822B"
+  },
+  "rating": "◎",
+  "summary": "音楽の楽しみ方の温度も含めてほぼ同じ。王道を愛する人と開拓する人の違いが良いスパイス",
+  "hashtags": [
+    "オトタイプ",
+    "相性診断",
+    "音楽好きと繋がりたい"
+  ]
+}

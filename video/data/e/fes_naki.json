@@ -1,0 +1,33 @@
+{
+  "template": "E",
+  "theme": "フェスで泣きがちなタイプ",
+  "ranks": [
+    {
+      "place": 1,
+      "type": "フェス感涙型",
+      "code": "FLDT",
+      "image": "types/FLDT.webp",
+      "color": "#FF7A3C"
+    },
+    {
+      "place": 2,
+      "type": "フェス大合唱型",
+      "code": "FSDT",
+      "image": "types/FSDT.webp",
+      "color": "#FF4D6D"
+    },
+    {
+      "place": 3,
+      "type": "弾き語り布教型",
+      "code": "FLDM",
+      "image": "types/FLDM.webp",
+      "color": "#E85D1F"
+    }
+  ],
+  "color": "#FF7A3C",
+  "hashtags": [
+    "オトタイプ",
+    "音楽診断",
+    "ランキング"
+  ]
+}
