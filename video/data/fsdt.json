@@ -1,0 +1,18 @@
+{
+  "type": "フェス大合唱型",
+  "code": "FSDT",
+  "catch": "音は、みんなで浴びるもの",
+  "image": "types/FSDT.webp",
+  "color": "#FF4D6D",
+  "axis": {
+    "place": 82,
+    "core": 86,
+    "immersion": 77,
+    "discover": 55
+  },
+  "hashtags": [
+    "合唱",
+    "開放感",
+    "夏"
+  ]
+}

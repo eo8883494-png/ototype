@@ -1,0 +1,18 @@
+{
+  "type": "ライブハウス魂型",
+  "code": "FSDM",
+  "catch": "爆音は、浄化",
+  "image": "types/FSDM.webp",
+  "color": "#D92E3C",
+  "axis": {
+    "place": 82,
+    "core": 86,
+    "immersion": 77,
+    "discover": 55
+  },
+  "hashtags": [
+    "爆音",
+    "衝動",
+    "ライブ"
+  ]
+}

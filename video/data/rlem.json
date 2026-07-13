@@ -1,0 +1,18 @@
+{
+  "type": "深夜ポエトリー型",
+  "code": "RLEM",
+  "catch": "夜だけ、言葉の解像度が上がる",
+  "image": "types/RLEM.webp",
+  "color": "#7A55D6",
+  "axis": {
+    "place": 97,
+    "core": 86,
+    "immersion": 80,
+    "discover": 55
+  },
+  "hashtags": [
+    "深夜",
+    "詩",
+    "開拓"
+  ]
+}

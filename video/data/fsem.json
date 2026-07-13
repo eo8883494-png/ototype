@@ -1,0 +1,18 @@
+{
+  "type": "フェス回遊型",
+  "code": "FSEM",
+  "catch": "無名の神ステージを探す",
+  "image": "types/FSEM.webp",
+  "color": "#C73A63",
+  "axis": {
+    "place": 82,
+    "core": 86,
+    "immersion": 80,
+    "discover": 55
+  },
+  "hashtags": [
+    "回遊",
+    "発掘",
+    "グルーヴ"
+  ]
+}

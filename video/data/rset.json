@@ -1,0 +1,18 @@
+{
+  "type": "チル・BGM型",
+  "code": "RSET",
+  "catch": "BGMこそ、人生の主役",
+  "image": "types/RSET.webp",
+  "color": "#5FA8E0",
+  "axis": {
+    "place": 97,
+    "core": 86,
+    "immersion": 80,
+    "discover": 55
+  },
+  "hashtags": [
+    "BGM",
+    "作業",
+    "心地よさ"
+  ]
+}

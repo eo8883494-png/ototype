@@ -1,0 +1,18 @@
+{
+  "type": "世界観考察型",
+  "code": "RLDM",
+  "catch": "歌詞の裏まで、読みにいく",
+  "image": "types/RLDM.webp",
+  "color": "#9438C9",
+  "axis": {
+    "place": 97,
+    "core": 86,
+    "immersion": 77,
+    "discover": 55
+  },
+  "hashtags": [
+    "考察",
+    "世界観",
+    "歌詞"
+  ]
+}

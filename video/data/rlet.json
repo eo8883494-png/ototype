@@ -1,0 +1,18 @@
+{
+  "type": "ドラマ主題歌型",
+  "code": "RLET",
+  "catch": "物語ごと、曲を好きになる",
+  "image": "types/RLET.webp",
+  "color": "#D77BE6",
+  "axis": {
+    "place": 97,
+    "core": 86,
+    "immersion": 80,
+    "discover": 55
+  },
+  "hashtags": [
+    "主題歌",
+    "物語",
+    "定番"
+  ]
+}

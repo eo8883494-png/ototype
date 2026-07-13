@@ -1,0 +1,18 @@
+{
+  "type": "洋楽アンテナ型",
+  "code": "RSEM",
+  "catch": "国境より、好みで聴く",
+  "image": "types/RSEM.webp",
+  "color": "#23A8D9",
+  "axis": {
+    "place": 97,
+    "core": 86,
+    "immersion": 80,
+    "discover": 55
+  },
+  "hashtags": [
+    "洋楽",
+    "センス",
+    "ボーダレス"
+  ]
+}

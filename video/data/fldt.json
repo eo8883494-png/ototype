@@ -1,0 +1,18 @@
+{
+  "type": "フェス感涙型",
+  "code": "FLDT",
+  "catch": "サビは、みんなで泣くもの",
+  "image": "types/FLDT.webp",
+  "color": "#FF7A3C",
+  "axis": {
+    "place": 82,
+    "core": 86,
+    "immersion": 77,
+    "discover": 55
+  },
+  "hashtags": [
+    "合唱",
+    "感動",
+    "王道"
+  ]
+}

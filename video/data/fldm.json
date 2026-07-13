@@ -1,0 +1,18 @@
+{
+  "type": "弾き語り布教型",
+  "code": "FLDM",
+  "catch": "剥き出しの言葉を、みんなに配りたい",
+  "image": "types/FLDM.webp",
+  "color": "#E85D1F",
+  "axis": {
+    "place": 82,
+    "core": 86,
+    "immersion": 77,
+    "discover": 55
+  },
+  "hashtags": [
+    "弾き語り",
+    "熱量",
+    "開拓"
+  ]
+}

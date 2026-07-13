@@ -1,0 +1,18 @@
+{
+  "type": "イヤホン没入型",
+  "code": "RSDT",
+  "catch": "音の中に、部屋がある",
+  "image": "types/RSDT.webp",
+  "color": "#4062E8",
+  "axis": {
+    "place": 97,
+    "core": 86,
+    "immersion": 77,
+    "discover": 55
+  },
+  "hashtags": [
+    "没入",
+    "世界観",
+    "ひとり時間"
+  ]
+}

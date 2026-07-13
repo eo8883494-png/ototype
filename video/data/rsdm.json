@@ -1,0 +1,18 @@
+{
+  "type": "サブスク潜水型",
+  "code": "RSDM",
+  "catch": "再生数の海を、ひとりで泳ぐ",
+  "image": "types/RSDM.webp",
+  "color": "#2E3FB0",
+  "axis": {
+    "place": 97,
+    "core": 86,
+    "immersion": 77,
+    "discover": 55
+  },
+  "hashtags": [
+    "発掘",
+    "サウンド",
+    "ネット"
+  ]
+}

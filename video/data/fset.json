@@ -1,0 +1,18 @@
+{
+  "type": "現場ノリ最優先型",
+  "code": "FSET",
+  "catch": "細かいことは、踊ってから",
+  "image": "types/FSET.webp",
+  "color": "#FF7E99",
+  "axis": {
+    "place": 82,
+    "core": 86,
+    "immersion": 80,
+    "discover": 55
+  },
+  "hashtags": [
+    "ノリ",
+    "ダンス",
+    "トレンド"
+  ]
+}

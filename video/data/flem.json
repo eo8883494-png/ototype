@@ -1,0 +1,18 @@
+{
+  "type": "名曲布教型",
+  "code": "FLEM",
+  "catch": "知る人ぞ知る一曲を、そっと配る",
+  "image": "types/FLEM.webp",
+  "color": "#D9822B",
+  "axis": {
+    "place": 82,
+    "core": 86,
+    "immersion": 80,
+    "discover": 55
+  },
+  "hashtags": [
+    "布教",
+    "歌詞",
+    "隠れた名曲"
+  ]
+}

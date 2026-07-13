@@ -1,0 +1,18 @@
+{
+  "type": "歌詞刺さり型",
+  "code": "RLDT",
+  "catch": "一行に、殴られにいく",
+  "image": "types/RLDT.webp",
+  "color": "#C24FD8",
+  "axis": {
+    "place": 97,
+    "core": 86,
+    "immersion": 77,
+    "discover": 55
+  },
+  "hashtags": [
+    "歌詞",
+    "共感",
+    "没入"
+  ]
+}

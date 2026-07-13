@@ -1,0 +1,18 @@
+{
+  "type": "カラオケ主役型",
+  "code": "FLET",
+  "catch": "歌える一曲を、いつも持ってる",
+  "image": "types/FLET.webp",
+  "color": "#FF9D5C",
+  "axis": {
+    "place": 82,
+    "core": 86,
+    "immersion": 80,
+    "discover": 55
+  },
+  "hashtags": [
+    "カラオケ",
+    "共感",
+    "定番"
+  ]
+}
