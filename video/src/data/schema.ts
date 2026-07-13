@@ -25,6 +25,8 @@ export type VideoData = {
   axis: AxisScores;
   /** ハッシュタグ(#は不要)。Scene4にピル表示 */
   hashtags: string[];
+  /** ニックネーム(パーソナル動画用)。あればScene1が「◯◯さんは…」になる */
+  nickname?: string;
   /** 診断サイトURL(QR・文言用)。省略時は既定URL */
   siteUrl?: string;
   /** QR画像(public/からの相対パス)。省略時は qr.png */

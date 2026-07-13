@@ -10,7 +10,12 @@ export const Scene1Intro: React.FC<{data: VideoData}> = ({data}) => (
   <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
     <Particles kind="notes" seed={`s1-${data.code}`} count={10} />
     <div style={{position: 'absolute', top: 320, width: '100%'}}>
-      <Title text="あなたは…" size={104} mode="fade" delay={2} />
+      <Title
+        text={data.nickname ? `${data.nickname}さんは…` : 'あなたは…'}
+        size={data.nickname ? 92 : 104}
+        mode="fade"
+        delay={2}
+      />
     </div>
     <Character image={data.image} size={860} popAt={4} />
   </AbsoluteFill>
