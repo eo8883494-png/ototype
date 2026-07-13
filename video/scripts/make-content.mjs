@@ -14,9 +14,9 @@ const {pickWeekly} = await import(pathToFileURL(path.join(SITE, 'playlist.mjs'))
 
 const CODES = Object.keys(TYPES);
 const side = (c) => ({type: TYPES[c].name, code: c, image: `types/${c}.webp`, color: TYPES[c].color});
-// ハッシュタグは6〜7個(2026-07-13ユーザー指示「しっかりセット」): 基本4+タイプ由来2+テンプレ固有
+// ハッシュタグは7〜8個(2026-07-13ユーザー指示): 基本4+タイプ名+タイプ由来2+テンプレ固有
 const BASE_TAGS = ['オトタイプ', '音楽診断', '16タイプ診断', '音楽好きな人と繋がりたい'];
-const tags = (c, extra) => [...new Set([...BASE_TAGS, ...(TYPES[c]?.keywords ?? []).slice(0, 2), ...(extra ?? [])])];
+const tags = (c, extra) => [...new Set([...BASE_TAGS, TYPES[c]?.name, ...(TYPES[c]?.keywords ?? []).slice(0, 2), ...(extra ?? [])].filter(Boolean))];
 const w = (rel, obj) => {
   const p = path.join(ROOT, rel);
   mkdirSync(path.dirname(p), {recursive: true});
@@ -58,7 +58,7 @@ for (const a of CODES) {
   pairs.push({a, b});
   w(`data/d/${a.toLowerCase()}_${b.toLowerCase()}.json`, {
     template: 'D', left: side(a), right: side(b), rating: comp.rating, summary: comp.summary,
-    hashtags: [...BASE_TAGS, '相性診断', 'ライブ好き'],
+    hashtags: [...BASE_TAGS, TYPES[a].name, TYPES[b].name, '相性診断'],
   });
 }
 
@@ -75,7 +75,7 @@ for (const r of RANKINGS) {
   w(`data/e/${r.slug}.json`, {
     template: 'E', theme: r.theme,
     ranks: r.codes.map((c, i) => ({place: i + 1, ...side(c)})),
-    color: TYPES[r.codes[0]].color, hashtags: [...BASE_TAGS, 'ランキング', '性格診断'],
+    color: TYPES[r.codes[0]].color, hashtags: [...BASE_TAGS, TYPES[r.codes[0]].name, 'ランキング', '性格診断'],
   });
 }
 
