@@ -3,17 +3,21 @@
 目的: ブラウザ経由の投稿自動化を廃止し、公式APIによる完全無人投稿へ移行する。
 審査通過までは現行のTelegram半自動運用を継続。
 
-## あなた(人間)がやる手順
+## 進捗(2026-07-18: 登録作業ほぼ完了)
 
-アカウント登録・ログインが必要なので、以下はユーザー側の操作です(所要15〜30分)。
-迷ったらこのファイルを見ながらでも、僕に画面を見せながらでもOK。
+アプリ登録は2026-07-18にCEO+ユーザー共同で実施済み。
+- **アプリ**: Ototype Video Poster(app id 7663656708362815506・Individual・下書き状態)
+- **完了**: 基本情報(名前/カテゴリ/説明/ToS/プライバシー/プラットフォームWeb)、Login Kit+Content Posting API追加、Direct Post有効化、Redirect URI設定、スコープ(user.info.basic/video.publish/video.upload)、**URL prefix検証済み**(署名ファイル tiktokZcfH8Ii6f2DOd4Ji7GFIovYU9TQhyQAA.txt をototypeリポジトリ直下に配置)、アプリアイコン(video/app_icon_1024.png)アップロード済み
+- **残り1つ: デモ動画**(OAuth認可→アップロードのエンドツーエンド画面収録・sandbox環境での実演が必須)
+- Client key/secretはポータルのCredentials欄で確認可能(マスク表示・まだ.envに未転記)
 
-1. https://developers.tiktok.com/ を開き、TikTokアカウント(@運用アカウント)でログイン
-2. 右上「Manage apps」→「Connect an app」で新規アプリ作成
-3. 各欄は下の「コピペ用申請内容」をそのまま使う
-4. Products から **Content Posting API** を追加し、スコープ `video.publish` をリクエスト
-5. 審査(App review)に進み、下の Use case 文を貼る。デモ動画/スクショを求められたら僕に言ってください(その時点でscripts/tiktok_api_post.pyを動かして画面収録の段取りをします)
-6. 申請後は待ち(目安3日〜2週間、差し戻しがあれば都度対応)
+## デモ動画の段取り(次のセッションでやる)
+
+1. ポータル上部「Sandbox」タブからsandbox環境を作成し、テスト対象アカウントに@運用アカウントを追加
+2. sandbox用Client key/secretをx-autopilot/.envに設定
+3. OAuth認可URL(scope=user.info.basic,video.publish / redirect=https://eo8883494-png.github.io/ototype/tiktok-callback.html)をブラウザで開き、認可→コールバックページに表示されるcodeをtiktok_api_post.pyでトークン交換
+4. ffmpeg(gdigrab)で画面収録しながら、tiktok_api_post.py --video でSELF_ONLY投稿を実演
+5. 収録mp4をApp reviewのデモ動画欄にアップロード(ファイル選択はユーザー操作)→Submit for review
 
 ## コピペ用申請内容
 
