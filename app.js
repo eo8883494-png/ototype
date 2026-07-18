@@ -1,7 +1,7 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "28";
+const ASSET_V = "29";
 import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=28";
 import { pickWeekly } from "./playlist.mjs?v=28";
 
@@ -415,21 +415,42 @@ function renderAxes() {
   }).join("");
 }
 
+// 検索先サービス(2026-07-18: Apple Music対応の要望を受けて切替式に)
+const MUSIC_SERVICES = [
+  { id: "spotify", label: "Spotify", url: (q) => `https://open.spotify.com/search/${encodeURIComponent(q)}` },
+  { id: "apple", label: "Apple Music", url: (q) => `https://music.apple.com/jp/search?term=${encodeURIComponent(q)}` },
+  { id: "ytm", label: "YouTube Music", url: (q) => `https://music.youtube.com/search?q=${encodeURIComponent(q)}` },
+];
+function getMusicService() {
+  const saved = localStorage.getItem("ototype_music_service");
+  return MUSIC_SERVICES.find((s) => s.id === saved) || MUSIC_SERVICES[0];
+}
+
 function playlistHTML(t) {
   const pool = PLAYLISTS[t.id] || [];
   const { songs } = pickWeekly(pool);
+  const svc = getMusicService();
+  const tabs = MUSIC_SERVICES.map((s) =>
+    `<button class="svctab${s.id === svc.id ? " on" : ""}" data-svc="${s.id}" type="button">${s.label}</button>`).join("");
   const rows = songs.map((s, i) =>
-    `<a class="song" href="https://open.spotify.com/search/${encodeURIComponent(s.t + " " + s.a)}" target="_blank" rel="noopener">
+    `<a class="song" href="${svc.url(s.t + " " + s.a)}" target="_blank" rel="noopener">
       <span class="no">${i + 1}</span><span class="meta"><span class="st">${esc(s.t)}</span><span class="sa">${esc(s.a)}</span></span><span class="go">🔍</span>
     </a>`).join("");
   return `<p class="pl-title">「${esc(t.playlist.title)}」</p>
     <p class="pl-week">今週の10曲 — 毎週自動で入れ替わります。タップで曲を検索できます。</p>
+    <div class="svctabs">${tabs}</div>
     <div class="songs">${rows}</div>
     <p class="pl-hint">選曲はエンタメ目的の例示です。楽曲は各サービスの公式配信でお楽しみください。</p>`;
 }
 
 function renderPlaylist(t) {
   $("#plbody").innerHTML = playlistHTML(t);
+  $("#plbody").querySelectorAll(".svctab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      localStorage.setItem("ototype_music_service", btn.dataset.svc);
+      renderPlaylist(t);
+    });
+  });
 }
 
 $("#retry").addEventListener("click", () => { clearInvite(); myResult = null; history.replaceState(null, "", location.pathname); startQuiz(); });
@@ -499,6 +520,12 @@ function renderTypeDetail(code) {
     </div>
     <button class="btn iconbtn" id="tdicon">このキャラをホーム画面アイコンにする</button>`;
   $("#tdicon").addEventListener("click", () => setCharIcon(code));
+  $("#tdbody").querySelectorAll(".svctab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      localStorage.setItem("ototype_music_service", btn.dataset.svc);
+      renderTypeDetail(code);
+    });
+  });
 }
 
 // ---------- share card (Canvas) ----------
