@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>認可完了 — Ototype Video Poster</title>
+<style>
+body { font-family: "Hiragino Sans", "Yu Gothic UI", sans-serif; max-width: 640px;
+  margin: 0 auto; padding: 60px 20px; line-height: 1.8; color: #26251f; background: #fafaf7; }
+h1 { font-size: 20px; }
+code { background: #efe9da; padding: 8px 12px; border-radius: 6px; display: block;
+  word-break: break-all; margin-top: 12px; font-size: 13px; }
+.note { color: #8a877c; font-size: 13px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<h1>TikTok認可が完了しました</h1>
+<p>このページはOtotype Video Poster(運営者専用ツール)のOAuthコールバックです。</p>
+<p>認可コード:</p>
+<code id="code">(URLパラメータなし)</code>
+<p class="note">運営者向け: 上記のコードをトークン交換スクリプトに渡してください。このページはコードの表示のみを行い、どこにも送信・保存しません。</p>
+<script>
+var params = new URLSearchParams(window.location.search);
+var code = params.get("code");
+if (code) document.getElementById("code").textContent = code;
+</script>
+</body>
+</html>
