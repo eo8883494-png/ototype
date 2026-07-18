@@ -11,13 +11,25 @@
 - **残り1つ: デモ動画**(OAuth認可→アップロードのエンドツーエンド画面収録・sandbox環境での実演が必須)
 - Client key/secretはポータルのCredentials欄で確認可能(マスク表示・まだ.envに未転記)
 
-## デモ動画の段取り(次のセッションでやる)
+## デモ動画: 完成(2026-07-18)
 
-1. ポータル上部「Sandbox」タブからsandbox環境を作成し、テスト対象アカウントに@運用アカウントを追加
-2. sandbox用Client key/secretをx-autopilot/.envに設定
-3. OAuth認可URL(scope=user.info.basic,video.publish / redirect=https://eo8883494-png.github.io/ototype/tiktok-callback.html)をブラウザで開き、認可→コールバックページに表示されるcodeをtiktok_api_post.pyでトークン交換
-4. ffmpeg(gdigrab)で画面収録しながら、tiktok_api_post.py --video でSELF_ONLY投稿を実演
-5. 収録mp4をApp reviewのデモ動画欄にアップロード(ファイル選択はユーザー操作)→Submit for review
+`C:\dev\ototype\video\demo_for_review.mp4`(2分38秒・1.7MB)。構成: ①OAuthコールバック(認可コード表示) ②Direct Post APIの実行コンソール(PROCESSING_UPLOAD/publish_id) ③TikTok Studioに「Ototype demo post (private test)」(自分のみ)が並ぶ画面。
+
+制作で判明した罠(次回のため):
+- **審査前アプリは「非公開アカウント」にしか投稿できない**(`unaudited_client_can_only_post_to_private_accounts`)。SELF_ONLY指定だけでは不十分で、アカウント自体を一時的に非公開にする必要がある。
+- sandbox作成時の「Clone from Production」は実際にはフォームを複製しない(全項目手入力+アイコン再アップロードが必要)。
+- 一度認可したアプリの再認可は同意画面がスキップされ即リダイレクトされる。同意画面を再表示するにはスマホのTikTok設定→セキュリティ→アプリの権限から連携解除が必要。
+- Claude-in-ChromeのMCPタブは実画面に表示されない(OSアクティブタブにならない)ため、画面収録に映したいブラウザ操作はユーザーが対象タブを前面にしている必要がある。同意画面の実画面収録は本セッションでは断念(コールバック以降で構成)。
+- PowerShellの`-Command`にカッコ入り文字列を渡すと解釈エラーになる。コンソール実演はcmdバッチ(scripts/run_demo_post.cmd)経由が安全。
+- gdigrabは`-offset_x 1920 -video_size 1920x1080`で右モニターだけを録画できる(左画面の映り込み防止)。
+
+## 提出手順(残り・人間の操作)
+
+1. **アカウントを公開に戻す**(スマホ: 設定→プライバシー→非公開アカウントをOFF)※デモ投稿完了済みなので非公開でいる必要はもう無い
+2. developers.tiktok.com → Ototype Video Poster → **Production** タブ → App review欄の「Upload」で `C:\dev\ototype\video\demo_for_review.mp4` を選択
+3. 「Submit for review」を押す
+4. 審査結果待ち(目安3日〜2週間)。差し戻しが来たら僕に共有→対応します
+5. (任意)Studioの非公開デモ投稿2本(Ototype demo post)は削除してよい
 
 ## コピペ用申請内容
 

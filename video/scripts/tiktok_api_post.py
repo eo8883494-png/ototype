@@ -40,8 +40,42 @@ def api_post(url, payload, token=None, content_type="application/json"):
     if token:
         headers["Authorization"] = f"Bearer {token}"
     req = urllib.request.Request(url, data=data, headers=headers)
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        raise SystemExit(f"HTTP {e.code} {url}\n{body}")
+
+
+REDIRECT_URI = "https://eo8883494-png.github.io/ototype/tiktok-callback.html"
+
+
+def auth_url(env):
+    q = urllib.parse.urlencode({
+        "client_key": env["TIKTOK_CLIENT_KEY"],
+        "response_type": "code",
+        "scope": "user.info.basic,video.publish",
+        "redirect_uri": REDIRECT_URI,
+        "state": "ototype",
+    })
+    return f"https://www.tiktok.com/v2/auth/authorize/?{q}"
+
+
+def exchange_code(env, code):
+    out = api_post(
+        f"{API_BASE}/oauth/token/",
+        {
+            "client_key": env["TIKTOK_CLIENT_KEY"],
+            "client_secret": env["TIKTOK_CLIENT_SECRET"],
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": REDIRECT_URI,
+        },
+        content_type="application/x-www-form-urlencoded",
+    )
+    print(json.dumps(out, ensure_ascii=False, indent=2))
+    print("\n上記 access_token / refresh_token を .env に反映してください")
 
 
 def refresh_access_token(env):
@@ -117,6 +151,8 @@ if __name__ == "__main__":
     ap.add_argument("--caption", default="")
     ap.add_argument("--public", action="store_true", help="既定はSELF_ONLY。本番公開時のみ指定")
     ap.add_argument("--refresh-token", action="store_true")
+    ap.add_argument("--auth-url", action="store_true", help="OAuth認可URLを表示")
+    ap.add_argument("--exchange-code", help="コールバックで得た認可コードをトークンに交換")
     args = ap.parse_args()
     env = load_env()
 
@@ -124,7 +160,11 @@ if __name__ == "__main__":
     if missing:
         raise SystemExit(f".envに未設定: {missing} — API審査承認後に設定します(申請キット参照)")
 
-    if args.refresh_token:
+    if args.auth_url:
+        print(auth_url(env))
+    elif args.exchange_code:
+        exchange_code(env, args.exchange_code)
+    elif args.refresh_token:
         refresh_access_token(env)
     elif args.video:
         if "TIKTOK_ACCESS_TOKEN" not in env:
