@@ -23,13 +23,16 @@
 - PowerShellの`-Command`にカッコ入り文字列を渡すと解釈エラーになる。コンソール実演はcmdバッチ(scripts/run_demo_post.cmd)経由が安全。
 - gdigrabは`-offset_x 1920 -video_size 1920x1080`で右モニターだけを録画できる(左画面の映り込み防止)。
 
-## 提出手順(残り・人間の操作)
+## 提出済み(2026-07-18 15時台)
 
-1. **アカウントを公開に戻す**(スマホ: 設定→プライバシー→非公開アカウントをOFF)※デモ投稿完了済みなので非公開でいる必要はもう無い
-2. developers.tiktok.com → Ototype Video Poster → **Production** タブ → App review欄の「Upload」で `C:\dev\ototype\video\demo_for_review.mp4` を選択
-3. 「Submit for review」を押す
-4. 審査結果待ち(目安3日〜2週間)。差し戻しが来たら僕に共有→対応します
-5. (任意)Studioの非公開デモ投稿2本(Ototype demo post)は削除してよい
+**Submit for review完了**。ポータル上部が「Recall」表示=審査キュー入り確認済み。提出理由: "Initial submission: requesting video.publish (Direct Post) to auto-post our own quiz videos to our own account daily."
+
+注意(2026-07-18に発覚): Production側のフォームは**エラーが残っているとSaveできず、ページ再読込で全入力が消える**。再入力時はfind/form_input(ref指定)でDOM操作するのが確実だった。提出後の状態変更はRecallで取り下げ可能。
+
+残タスク:
+- 審査結果待ち(目安3日〜2週間)。結果はポータル通知/メール。差し戻し時は内容を確認して対応
+- 承認後: tiktok_api_post.pyへの本番Client key/secret切替(Production Credentials)→OAuth再認可→ototype-tiktok-daily SKILL.mdの手順5をAPI直接投稿へ差し替え→Telegram通知は完了報告用に転用
+- (任意)Studioの非公開デモ投稿2本(Ototype demo post)は削除してよい
 
 ## コピペ用申請内容
 
