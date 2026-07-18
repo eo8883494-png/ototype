@@ -1,7 +1,7 @@
 // app.js — オトタイプ SPA 本体。ビルドなし・ライブラリなし・AI不使用（解説はテンプレ）。
 // 判定ロジックは scoring.mjs（単一の真実源）。キャラはユーザー制作イラスト assets/chars/{code}.webp。
 // ?v= はキャッシュバスター。デプロイで挙動が変わるときは index.html 側と揃えて数字を上げる。
-const ASSET_V = "29";
+const ASSET_V = "30";
 import { judge, AXES, SCALE, AXIS_MAX } from "./scoring.mjs?v=28";
 import { pickWeekly } from "./playlist.mjs?v=28";
 
@@ -53,7 +53,13 @@ async function boot() {
   const p = new URLSearchParams(location.search);
   const a = p.get("a");
   if (p.get("v") === LINK_V && a && new RegExp(`^[0-6]{${QUESTIONS.length}}$`).test(a)) {
-    inviter = { answers: [...a].map(Number), nick: (p.get("n") || "").slice(0, NICK_MAX) };
+    // u=招待者のuid(任意)。相手が相性チェックを終えたとき、招待者の「届いた相性チェック」に記録するため
+    const u = p.get("u") || "";
+    inviter = {
+      answers: [...a].map(Number),
+      nick: (p.get("n") || "").slice(0, NICK_MAX),
+      uid: /^[A-Za-z0-9]{10,64}$/.test(u) ? u : "",
+    };
     try { sessionStorage.setItem(INVITE_SS, JSON.stringify(inviter)); } catch (e) { /* プライベートモード等 */ }
     history.replaceState(null, "", location.pathname + location.hash);
   } else {
@@ -61,7 +67,11 @@ async function boot() {
       const saved = JSON.parse(sessionStorage.getItem(INVITE_SS));
       if (saved && Array.isArray(saved.answers) && saved.answers.length === QUESTIONS.length
         && saved.answers.every((n) => Number.isInteger(n) && n >= 0 && n <= 6)) {
-        inviter = { answers: saved.answers, nick: String(saved.nick || "").slice(0, NICK_MAX) };
+        inviter = {
+          answers: saved.answers,
+          nick: String(saved.nick || "").slice(0, NICK_MAX),
+          uid: /^[A-Za-z0-9]{10,64}$/.test(String(saved.uid || "")) ? String(saved.uid) : "",
+        };
       }
     } catch (e) { /* 保存なし・壊れたデータは無視 */ }
   }
@@ -192,13 +202,15 @@ async function renderHistory() {
   }
   box.innerHTML = `<p class="hist-empty">読み込み中…</p>`;
   try {
-    const [rs, cs] = await Promise.all([
+    const [rs, cs, ibx] = await Promise.all([
       FB.D.get(FB.D.query(userRef("results"), FB.D.limitToLast(50))),
       FB.D.get(FB.D.query(userRef("compats"), FB.D.limitToLast(50))),
+      FB.D.get(FB.D.query(FB.D.ref(FB.db, `ototype/inbox/${FB.user.uid}`), FB.D.limitToLast(50))),
     ]);
     const results = []; rs.forEach((s) => results.push(s.val()));
     const compats = []; cs.forEach((s) => compats.push(s.val()));
-    results.reverse(); compats.reverse();
+    const inbox = []; ibx.forEach((s) => inbox.push(s.val()));
+    results.reverse(); compats.reverse(); inbox.reverse();
     const fmt = (ts) => { const d = new Date(ts); return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`; };
     const rrows = results.map((r) => {
       const t = TYPES[r.code]; if (!t) return "";
@@ -208,11 +220,18 @@ async function renderHistory() {
       const a = TYPES[c.me], b = TYPES[c.other]; if (!a || !b) return "";
       return `<div class="hrow flat"><span class="hrate" style="color:${esc(a.color)}">${esc(c.rating)}</span><span class="hmeta"><b>${esc(c.nick || "友達")}(${esc(b.name)}) × あなた(${esc(a.name)})</b><i>${fmt(c.ts)}</i></span></div>`;
     }).join("");
+    const irows = inbox.map((c) => {
+      const a = TYPES[c.fromCode], b = TYPES[c.myCode]; if (!a || !b) return "";
+      return `<div class="hrow flat"><span class="hrate" style="color:${esc(a.color)}">${esc(c.rating)}</span><span class="hmeta"><b>${esc(c.from || "だれか")}(${esc(a.name)}) × あなた(${esc(b.name)})</b><i>${fmt(c.ts)}</i></span></div>`;
+    }).join("");
     box.innerHTML = `
       <h3 class="histh">診断のきろく</h3>
       ${rrows || '<p class="hist-empty">まだ診断のきろくがありません。</p>'}
       <h3 class="histh">相性チェックのきろく</h3>
       ${crows || '<p class="hist-empty">まだ相性チェックのきろくがありません。</p>'}
+      <h3 class="histh">届いた相性チェック</h3>
+      <p class="pl-week">あなたの相性リンクから友達がチェックしてくれた結果です。ログイン中に作ったリンクだけが届きます。</p>
+      ${irows || '<p class="hist-empty">まだ届いていません。結果画面から相性リンクを送ってみよう。</p>'}
       <div class="actions">
         <button class="btn ghost" id="histclear">きろくを全部削除する</button>
       </div>
@@ -228,6 +247,7 @@ async function renderHistory() {
     $("#histclear").addEventListener("click", async () => {
       if (!confirm("診断と相性のきろくをすべて削除します。よろしいですか？")) return;
       await FB.D.remove(FB.D.ref(FB.db, `ototype/users/${FB.user.uid}`));
+      try { await FB.D.remove(FB.D.ref(FB.db, `ototype/inbox/${FB.user.uid}`)); } catch (e) { /* noop */ }
       toast("きろくを削除しました");
       renderHistory();
     });
@@ -605,7 +625,9 @@ $("#savecard").addEventListener("click", async () => {
 $("#makelink").addEventListener("click", async () => {
   track("make_invite_link", { result_type: myResult.code });
   const nick = $("#nick").value.trim().slice(0, NICK_MAX);
-  const url = `${siteBase()}index.html?a=${answers.join("")}&v=${LINK_V}${nick ? "&n=" + encodeURIComponent(nick) : ""}`;
+  // ログイン中はuidをリンクに含める→相手がチェックを終えたら「届いた相性チェック」に記録される
+  const uidPart = FB.user ? `&u=${encodeURIComponent(FB.user.uid)}` : "";
+  const url = `${siteBase()}index.html?a=${answers.join("")}&v=${LINK_V}${nick ? "&n=" + encodeURIComponent(nick) : ""}${uidPart}`;
   const text = `私は「${typeOf(myResult.code).name}」だった🎧 相性チェックしてみて→ ${url}`;
   if (navigator.share) { try { await navigator.share({ text }); return; } catch (e) { /* fallthrough */ } }
   await copy(text); toast("相性リンクをコピーしました");
@@ -650,6 +672,15 @@ function showCompat() {
   if (FB.user) {
     saveRecord("compats", { ts: Date.now(), nick: inviter.nick || "", me: me.code, other: other.code, rating: base.rating })
       .then((ok) => { if (ok) toast("きろくに保存しました"); });
+  }
+  // 招待者側の「届いた相性チェック」に記録(リンクにuidが入っていた場合のみ。書き込みはログイン不要)
+  if (inviter.uid && FB.db) {
+    const fromName = (FB.user && FB.user.displayName) ? String(FB.user.displayName).slice(0, NICK_MAX) : "";
+    try {
+      FB.D.push(FB.D.ref(FB.db, `ototype/inbox/${inviter.uid}`), {
+        ts: Date.now(), from: fromName, fromCode: me.code, myCode: other.code, rating: base.rating,
+      });
+    } catch (e) { /* 通知に失敗しても相性表示は続行 */ }
   }
   $("#crating").textContent = base.rating;
   $("#clive").textContent = live;
