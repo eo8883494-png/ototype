@@ -1,7 +1,7 @@
 seq,template,json,primary,status,posted_at
 1,A,data/rldm.json,RLDM,posted,2026-07-13
-2,B,data/b/rsdm.json,RSDM,pending,
-3,C,data/c/rsdt.json,RSDT,pending,
+2,B,data/b/rsdm.json,RSDM,posted,2026-07-13
+3,C,data/c/rsdt.json,RSDT,sent_to_phone,2026-07-18
 4,A,data/rldt.json,RLDT,pending,
 5,C,data/c/rsdm.json,RSDM,pending,
 6,B,data/b/rsdt.json,RSDT,pending,
